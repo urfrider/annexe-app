@@ -7,8 +7,9 @@ import { makeImagePath } from "../Hooks/utils";
 import { useMatch, useNavigate } from "react-router-dom";
 
 const Wrapper = styled.div`
-  background-color: black;
-  height: 200vh;
+  background: black;
+  padding-bottom: 200px;
+  overflow-x: hidden;
 `;
 
 const Loader = styled.div`
@@ -82,6 +83,49 @@ const Detail = styled(motion.div)`
   }
 `;
 
+const Overlay = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+`;
+
+const MovieDetail = styled(motion.div)`
+  position: fixed;
+  background-color: ${(props) => props.theme.black.lighter};
+  width: 40vw;
+  height: 80vh;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+`;
+
+const MovieCover = styled.img`
+  width: 100%;
+  background-size: cover;
+  background-position: center center;
+  height: 300px;
+`;
+
+const MovieTitle = styled.h2`
+  color: ${(props) => props.theme.white.lighter};
+  padding: 20px;
+  font-size: 46px;
+  position: relative;
+  top: -80px;
+`;
+
+const MovieOverview = styled.p`
+  padding: 20px;
+  position: relative;
+  top: -80px;
+  color: ${(props) => props.theme.white.lighter};
+`;
+
 const boxVars = {
   normal: {
     scale: 1,
@@ -144,6 +188,13 @@ function Home() {
   const onBoxClick = (movieId: number) => {
     navigate(`movies/${movieId}`);
   };
+  const overlayOnClick = () => {
+    navigate(-1);
+  };
+  const clickedMovie =
+    movieMatch?.params.movieId &&
+    data?.results.find((movie) => movie.id + "" === movieMatch.params.movieId);
+  console.log(clickedMovie);
   return (
     <Wrapper>
       {isLoading ? (
@@ -191,23 +242,34 @@ function Home() {
               </Row>
             </AnimatePresence>
           </Slider>
-          {movieMatch && (
-            <AnimatePresence>
-              <motion.div
-                layoutId={movieMatch.params.movieId + ""}
-                style={{
-                  position: "absolute",
-                  width: "40vw",
-                  height: "80vh",
-                  backgroundColor: "red",
-                  top: 50,
-                  left: 0,
-                  right: 0,
-                  margin: "0 auto",
-                }}
-              ></motion.div>
-            </AnimatePresence>
-          )}
+          <AnimatePresence>
+            {movieMatch && (
+              <>
+                <Overlay
+                  onClick={overlayOnClick}
+                  exit={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                />
+                <MovieDetail
+                  style={{ top: 50 }}
+                  layoutId={movieMatch.params.movieId + ""}
+                >
+                  {clickedMovie && (
+                    <>
+                      <MovieCover
+                        src={makeImagePath(clickedMovie.backdrop_path, "w500")}
+                        style={{
+                          backgroundImage: `linear-gradient(to top, black, transparent)`,
+                        }}
+                      />
+                      <MovieTitle>{clickedMovie.title}</MovieTitle>
+                      <MovieOverview>{clickedMovie.overview}</MovieOverview>
+                    </>
+                  )}
+                </MovieDetail>
+              </>
+            )}
+          </AnimatePresence>
         </>
       )}
     </Wrapper>
