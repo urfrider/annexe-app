@@ -5,12 +5,14 @@ import Home from "./pages/Home";
 import Story from "./pages/Story";
 import Event from "./pages/Event";
 import Login from "./pages/Login";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <>
       <ReactQueryDevtools initialIsOpen={true} />
       <Router>
+        <Toaster />
         <Header />
         <Routes>
           <Route path="/" element={<Home />}>

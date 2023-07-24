@@ -7,18 +7,14 @@ import { makeImagePath } from "../Hooks/utils";
 import { useMatch, useNavigate } from "react-router-dom";
 import { BiLeftArrow, BiRightArrow } from "react-icons/bi";
 import useMediaQuery from "../Hooks/useMediaQuery";
-
-const Wrapper = styled.div`
-  background: black;
-  padding-bottom: 200px;
-  overflow-x: hidden;
-`;
+import { Wrapper } from "../Components/styledComponents";
+import { ClipLoader } from "react-spinners";
 
 const Loader = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 20vh;
+  height: 100vh;
 `;
 
 const Banner = styled.div<{ bgPhoto: string }>`
@@ -140,6 +136,7 @@ const SliderWrapper = styled.div`
 
 const HeaderTitle = styled.h1`
   font-size: 2rem;
+  font-weight: bold;
   position: absolute;
   top: -130px;
   left: 60px;
@@ -249,7 +246,9 @@ function Home() {
   return (
     <Wrapper>
       {isLoading ? (
-        <Loader>Loading...</Loader>
+        <Loader>
+          <ClipLoader color="lightblue" size={80} />
+        </Loader>
       ) : (
         <>
           <Banner bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}>
@@ -262,7 +261,7 @@ function Home() {
           </Banner>
 
           <SliderWrapper>
-            <HeaderTitle>Events</HeaderTitle>
+            <HeaderTitle>Event</HeaderTitle>
             <BiLeftArrow style={style} onClick={decreaseIndex} />
             <Slider>
               <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
