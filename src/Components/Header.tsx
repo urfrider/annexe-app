@@ -1,7 +1,6 @@
 import { motion, useAnimation, useScroll } from "framer-motion";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Link, useMatch, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useMatch } from "react-router-dom";
 import styled from "styled-components";
 import { AiOutlineUser } from "react-icons/ai";
 import annexeLogo from "../assets/annexe-logo.png";
@@ -53,29 +52,6 @@ const Item = styled.li`
   }
 `;
 
-const Search = styled.form`
-  position: relative;
-  display: flex;
-  align-items: center;
-  color: white;
-  svg {
-    height: 25px;
-  }
-`;
-
-const Input = styled(motion.input)`
-  transform-origin: right center;
-  position: absolute;
-  right: 0px;
-  padding: 5px 10px;
-  padding-left: 40px;
-  z-index: -1;
-  color: white;
-  font-size: 16px;
-  background-color: transparent;
-  border: 1px solid ${(props) => props.theme.white.lighter};
-`;
-
 const Circle = styled(motion.div)`
   position: absolute;
   background-color: ${(props) => props.theme.red};
@@ -84,19 +60,6 @@ const Circle = styled(motion.div)`
   border-radius: 50%;
   bottom: -10px;
 `;
-
-const logoVars = {
-  normal: {
-    fillOpacity: 1,
-  },
-  active: {
-    fillOpacity: [0, 1, 0],
-    transition: {
-      repeat: Infinity,
-      duration: 1,
-    },
-  },
-};
 
 const navVars = {
   top: {
@@ -108,25 +71,13 @@ const navVars = {
   },
 };
 
-interface IForm {
-  keyword: string;
-}
-
 function Header() {
-  const navigate = useNavigate();
   const homeMatch = useMatch("/");
   const storyMatch = useMatch("/story");
   const eventMatch = useMatch("/event");
-  const [searchOpen, setSearchOpen] = useState(false);
   const { scrollY } = useScroll();
   const navAnimate = useAnimation();
-  const { register, handleSubmit } = useForm<IForm>();
   const style = { color: "white", fontSize: "2em" };
-
-  const onValid = (data: IForm) => {
-    console.log(data);
-    navigate(`/search?keyword=${data.keyword}`);
-  };
 
   useEffect(() => {
     scrollY.onChange(() => {

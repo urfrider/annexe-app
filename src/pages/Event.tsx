@@ -9,6 +9,7 @@ import {
   Wrapper,
 } from "../Components/styledComponents";
 import styled from "styled-components";
+import { toast } from "react-hot-toast";
 
 const ToggleButton = styled.div<{ isEvent: boolean }>`
   display: flex;
@@ -27,6 +28,10 @@ const ToggleButton = styled.div<{ isEvent: boolean }>`
     border-bottom-left-radius: 0.5rem;
     background-color: ${(props) =>
       props.isEvent === true ? "#715c7d" : "none"};
+    transition: linear 0.3s;
+    &:hover {
+      color: ${(props) => (props.isEvent === true ? "none" : "#715c7d")};
+    }
   }
   .history {
     display: flex;
@@ -38,6 +43,10 @@ const ToggleButton = styled.div<{ isEvent: boolean }>`
     border-bottom-right-radius: 0.5rem;
     background-color: ${(props) =>
       props.isEvent === true ? "none" : "#715c7d"};
+    transition: linear 0.3s;
+    &:hover {
+      color: ${(props) => (props.isEvent === true ? "#715c7d" : "none")};
+    }
   }
 `;
 
@@ -57,11 +66,12 @@ function Event() {
       posterImage: posterImage,
     };
     console.log(data);
+    toast.success("Added successfully");
   };
 
   return (
     <Wrapper>
-      <FormContainer>
+      <FormContainer onSubmit={onSubmit}>
         <ToggleButton isEvent={event}>
           <div onClick={() => setEvent(true)} className="event">
             Event
@@ -73,13 +83,19 @@ function Event() {
         <FormTitle>
           {event == true ? "Add your event" : "Add your history"}
         </FormTitle>
-        <Input placeholder="Title" onChange={(e) => setTitle(e.target.value)} />
+        <Input
+          required
+          placeholder="Title"
+          onChange={(e) => setTitle(e.target.value)}
+        />
         <Input
           placeholder="Organization"
+          required
           onChange={(e) => setOrganization(e.target.value)}
         />
         <Textarea
           placeholder="Description"
+          required={true}
           onChange={(e) => setDescription(e.target.value)}
         />
         <ImageUpload
@@ -87,7 +103,7 @@ function Event() {
           onChange={(image) => setPosterImage(image)}
           label="Upload poster image"
         />
-        <FormButton onClick={onSubmit}>Submit</FormButton>
+        <FormButton>Submit</FormButton>
       </FormContainer>
     </Wrapper>
   );

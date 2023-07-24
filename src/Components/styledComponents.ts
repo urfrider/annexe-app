@@ -20,7 +20,7 @@ const Textarea = styled.textarea`
   }
 `;
 
-const FormContainer = styled.div`
+const FormContainer = styled.form`
   display: flex;
   align-items: center;
   justify-content: center;

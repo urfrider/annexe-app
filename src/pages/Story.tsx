@@ -26,11 +26,16 @@ function Story() {
 
   return (
     <Wrapper>
-      <FormContainer>
+      <FormContainer onSubmit={onSubmit}>
         <FormTitle>Add your story</FormTitle>
-        <Input placeholder="Title" onChange={(e) => setTitle(e.target.value)} />
+        <Input
+          required={true}
+          placeholder="Title"
+          onChange={(e) => setTitle(e.target.value)}
+        />
         <Textarea
           placeholder="Description"
+          required={true}
           onChange={(e) => setDescription(e.target.value)}
         />
         <ImageUpload
@@ -38,7 +43,7 @@ function Story() {
           onChange={(image) => setPosterImage(image)}
           label="Upload poster image"
         />
-        <FormButton onClick={onSubmit}>Submit</FormButton>
+        <FormButton>Submit</FormButton>
       </FormContainer>
     </Wrapper>
   );

@@ -8,12 +8,13 @@ import { useMatch, useNavigate } from "react-router-dom";
 import { BiLeftArrow, BiRightArrow } from "react-icons/bi";
 import useMediaQuery from "../Hooks/useMediaQuery";
 import { Wrapper } from "../Components/styledComponents";
+import { ClipLoader } from "react-spinners";
 
 const Loader = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 20vh;
+  height: 100vh;
 `;
 
 const Banner = styled.div<{ bgPhoto: string }>`
@@ -245,7 +246,9 @@ function Home() {
   return (
     <Wrapper>
       {isLoading ? (
-        <Loader>Loading...</Loader>
+        <Loader>
+          <ClipLoader color="lightblue" size={80} />
+        </Loader>
       ) : (
         <>
           <Banner bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}>
