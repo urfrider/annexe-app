@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
 
 function useMediaQuery(query: string) {
   const [isMatching, setIsMatching] = useState(false);
 
-  useEffect(() =>{
+  useEffect(() => {
     const media = window.matchMedia(query);
+    console.log(media);
     const onResize = () => setIsMatching(media.matches);
 
     if (media.matches !== isMatching) {
@@ -12,7 +13,7 @@ function useMediaQuery(query: string) {
     }
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, [isMatching, query])
+  }, [isMatching, query]);
 
   return isMatching;
 }

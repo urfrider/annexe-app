@@ -5,6 +5,8 @@ import styled from "styled-components";
 import { getMovies, IGetMoviesResult } from "../Hooks/api";
 import { makeImagePath } from "../Hooks/utils";
 import { useMatch, useNavigate } from "react-router-dom";
+import { BiLeftArrow, BiRightArrow } from "react-icons/bi";
+import useMediaQuery from "../Hooks/useMediaQuery";
 
 const Wrapper = styled.div`
   background: black;
@@ -42,7 +44,9 @@ const Overview = styled.p`
 
 const Slider = styled.div`
   position: relative;
+  width: 85%;
   top: -100px;
+  margin: 5px;
 `;
 
 const Row = styled(motion.div)`
@@ -126,6 +130,21 @@ const MovieOverview = styled.p`
   color: ${(props) => props.theme.white.lighter};
 `;
 
+const SliderWrapper = styled.div`
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 350px;
+`;
+
+const HeaderTitle = styled.h1`
+  font-size: 2rem;
+  position: absolute;
+  top: -130px;
+  left: 60px;
+`;
+
 const boxVars = {
   normal: {
     scale: 1,
@@ -152,19 +171,38 @@ const detailVars = {
   },
 };
 
-const rowVars = {
+const rightVars = {
   hidden: {
     x: window.innerWidth - 5,
+    opacity: 0,
   },
   visible: {
     x: 0,
+    opacity: 1,
   },
   exit: {
     x: -window.innerWidth + 5,
+    opacity: 0,
+  },
+};
+
+const leftVars = {
+  hidden: {
+    x: -window.innerWidth + 5,
+    opacity: 0,
+  },
+  visible: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: {
+    x: window.innerWidth - 5,
+    opacity: 0,
   },
 };
 
 function Home() {
+  const isGTMediumScreen = useMediaQuery("(min-width: 1060px)");
   const navigate = useNavigate();
   const offset = 6;
   const { data, isLoading } = useQuery<IGetMoviesResult>(
@@ -173,15 +211,27 @@ function Home() {
   );
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
+  const [left, setLeft] = useState(false);
   const movieMatch = useMatch("/movies/:movieId");
   console.log(movieMatch);
   const increaseIndex = () => {
+    setLeft(false);
     if (data) {
       if (leaving) return;
       toggleLeaving();
       const totalMovies = data.results.length - 1;
       const totalIndex = Math.floor(totalMovies / offset) - 1;
       setIndex((prev) => (prev === totalIndex ? 0 : prev + 1));
+    }
+  };
+  const decreaseIndex = () => {
+    setLeft(true);
+    if (data) {
+      if (leaving) return;
+      toggleLeaving();
+      const totalMovies = data.results.length - 1;
+      const totalIndex = Math.floor(totalMovies / offset) - 1;
+      setIndex((prev) => (prev === 0 ? totalIndex : prev - 1));
     }
   };
   const toggleLeaving = () => setLeaving((prev) => !prev);
@@ -195,53 +245,142 @@ function Home() {
     movieMatch?.params.movieId &&
     data?.results.find((movie) => movie.id + "" === movieMatch.params.movieId);
   console.log(clickedMovie);
+  const style = { color: "white", fontSize: "2em" };
   return (
     <Wrapper>
       {isLoading ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
-          <Banner
-            onClick={increaseIndex}
-            bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}
-          >
-            <Title>{data?.results[0].title}</Title>
-            <Overview>{data?.results[0].overview}</Overview>
+          <Banner bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}>
+            <Title>Welcome to The Annexe Community</Title>
+            <Overview>
+              Annexe Communities is a community-led development trust working
+              with people living in central and west Glasgow. We work from our
+              healthy living centre base in Partick.
+            </Overview>
           </Banner>
-          <Slider>
-            <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
-              <Row
-                variants={rowVars}
-                animate="visible"
-                initial="hidden"
-                exit="exit"
-                key={index}
-                transition={{ type: "tween", duration: 1 }}
-              >
-                {data?.results
-                  .slice(1)
-                  .slice(index * offset, index * offset + offset)
-                  .map((movie) => (
-                    <Box
-                      onClick={() => {
-                        onBoxClick(movie.id);
-                      }}
-                      layoutId={movie.id + ""}
-                      variants={boxVars}
-                      whileHover="hover"
-                      initial="normal"
-                      transition={{ type: "tween" }}
-                      key={movie.id}
-                      bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
-                    >
-                      <Detail variants={detailVars}>
-                        <h4>{movie.title}</h4>
-                      </Detail>
-                    </Box>
-                  ))}
-              </Row>
-            </AnimatePresence>
-          </Slider>
+
+          <SliderWrapper>
+            <HeaderTitle>Events</HeaderTitle>
+            <BiLeftArrow style={style} onClick={decreaseIndex} />
+            <Slider>
+              <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
+                <Row
+                  variants={left ? leftVars : rightVars}
+                  animate="visible"
+                  initial="hidden"
+                  exit="exit"
+                  key={index}
+                  transition={{ type: "tween", duration: 1 }}
+                >
+                  {data?.results
+                    .slice(1)
+                    .slice(index * offset, index * offset + offset)
+                    .map((movie) => (
+                      <Box
+                        onClick={() => {
+                          onBoxClick(movie.id);
+                        }}
+                        layoutId={movie.id + ""}
+                        variants={boxVars}
+                        whileHover="hover"
+                        initial="normal"
+                        transition={{ type: "tween" }}
+                        key={movie.id}
+                        bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
+                      >
+                        <Detail variants={detailVars}>
+                          <h4>{movie.title}</h4>
+                        </Detail>
+                      </Box>
+                    ))}
+                </Row>
+              </AnimatePresence>
+            </Slider>
+            <BiRightArrow style={style} onClick={increaseIndex} />
+          </SliderWrapper>
+
+          <SliderWrapper>
+            <HeaderTitle>History</HeaderTitle>
+            <BiLeftArrow style={style} onClick={decreaseIndex} />
+            <Slider>
+              <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
+                <Row
+                  variants={left ? leftVars : rightVars}
+                  animate="visible"
+                  initial="hidden"
+                  exit="exit"
+                  key={index}
+                  transition={{ type: "tween", duration: 1 }}
+                >
+                  {data?.results
+                    .slice(1)
+                    .slice(index * offset, index * offset + offset)
+                    .map((movie) => (
+                      <Box
+                        onClick={() => {
+                          onBoxClick(movie.id);
+                        }}
+                        layoutId={movie.id + ""}
+                        variants={boxVars}
+                        whileHover="hover"
+                        initial="normal"
+                        transition={{ type: "tween" }}
+                        key={movie.id}
+                        bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
+                      >
+                        <Detail variants={detailVars}>
+                          <h4>{movie.title}</h4>
+                        </Detail>
+                      </Box>
+                    ))}
+                </Row>
+              </AnimatePresence>
+            </Slider>
+            <BiRightArrow style={style} onClick={increaseIndex} />
+          </SliderWrapper>
+
+          <SliderWrapper style={{ marginBottom: 0 }}>
+            <HeaderTitle>Story</HeaderTitle>
+            <BiLeftArrow style={style} onClick={decreaseIndex} />
+            <Slider>
+              <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
+                <Row
+                  variants={left ? leftVars : rightVars}
+                  animate="visible"
+                  initial="hidden"
+                  exit="exit"
+                  key={index}
+                  transition={{ type: "tween", duration: 1 }}
+                >
+                  {data?.results
+                    .slice(1)
+                    .slice(index * offset, index * offset + offset)
+                    .map((movie) => (
+                      <Box
+                        onClick={() => {
+                          onBoxClick(movie.id);
+                        }}
+                        layoutId={movie.id + ""}
+                        variants={boxVars}
+                        whileHover="hover"
+                        initial="normal"
+                        transition={{ type: "tween" }}
+                        key={movie.id}
+                        bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
+                      >
+                        <Detail variants={detailVars}>
+                          <h4>{movie.title}</h4>
+                        </Detail>
+                      </Box>
+                    ))}
+                </Row>
+              </AnimatePresence>
+            </Slider>
+            <BiRightArrow style={style} onClick={increaseIndex} />
+          </SliderWrapper>
+
           <AnimatePresence>
             {movieMatch && (
               <>
