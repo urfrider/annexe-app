@@ -4,6 +4,7 @@ import Header from "./Components/Header";
 import Home from "./pages/Home";
 import Story from "./pages/Story";
 import Event from "./pages/Event";
+import Login from "./pages/Login";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           </Route>
           <Route path="/story" element={<Story />} />
           <Route path="/event" element={<Event />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </Router>
     </>

@@ -175,7 +175,9 @@ function Header() {
         </Items>
       </Col>
       <Col>
+      <Link to="/login">
         <AiOutlineUser style={style} />
+        </Link>
       </Col>
     </Nav>
   );
