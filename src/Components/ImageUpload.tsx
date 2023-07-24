@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
+import styled from "styled-components";
 
 interface IIMageUploadProps {
   onChange: (base64: string) => void;
@@ -7,6 +8,14 @@ interface IIMageUploadProps {
   value?: string;
   disabled?: boolean;
 }
+
+const Wrapper = styled.div`
+  width: 40%;
+  padding: 1rem;
+  text-align: center;
+  border: 3px dotted #715c7d;
+  border-radius: 1rem;
+`;
 
 const ImageUpload: React.FC<IIMageUploadProps> = ({
   onChange,
@@ -42,12 +51,7 @@ const ImageUpload: React.FC<IIMageUploadProps> = ({
   });
 
   return (
-    <div
-      {...getRootProps({
-        className:
-          "w-full p-4 text-white text-center border-2 border-dotted rounded-md border-neutral-700",
-      })}
-    >
+    <Wrapper {...getRootProps()}>
       <input {...getInputProps()} />
       {base64 ? (
         <div className="flex items-center justify-center">
@@ -56,7 +60,7 @@ const ImageUpload: React.FC<IIMageUploadProps> = ({
       ) : (
         <p className="text-white">{label}</p>
       )}
-    </div>
+    </Wrapper>
   );
 };
 

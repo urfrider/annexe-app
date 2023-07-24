@@ -7,12 +7,7 @@ import { makeImagePath } from "../Hooks/utils";
 import { useMatch, useNavigate } from "react-router-dom";
 import { BiLeftArrow, BiRightArrow } from "react-icons/bi";
 import useMediaQuery from "../Hooks/useMediaQuery";
-
-const Wrapper = styled.div`
-  background: black;
-  padding-bottom: 200px;
-  overflow-x: hidden;
-`;
+import { Wrapper } from "../Components/styledComponents";
 
 const Loader = styled.div`
   display: flex;
@@ -140,6 +135,7 @@ const SliderWrapper = styled.div`
 
 const HeaderTitle = styled.h1`
   font-size: 2rem;
+  font-weight: bold;
   position: absolute;
   top: -130px;
   left: 60px;
@@ -262,7 +258,7 @@ function Home() {
           </Banner>
 
           <SliderWrapper>
-            <HeaderTitle>Events</HeaderTitle>
+            <HeaderTitle>Event</HeaderTitle>
             <BiLeftArrow style={style} onClick={decreaseIndex} />
             <Slider>
               <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
