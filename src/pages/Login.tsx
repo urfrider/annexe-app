@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from "styled-components";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "../firebase/firebaseConfig";
+import { useAuth } from '../firebase/firebaseAuth';
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -70,34 +71,37 @@ const LoggedInMessage = styled.div`
   text-align: center;
 `;
 
+const ErrorText = styled.div`
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+`;
+
 const Login = () => {
+  const  user : any = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log('Email:', email);
-    console.log('Password:', password);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      console.log("success");
-      setIsLoggedIn(true);
     } catch (error) {
       console.log('Error:', error);
+      setLoginError('Invalid email or password. Please try again.');
     }
   };
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      setIsLoggedIn(false);
     } catch (error) {
       console.log('Error:', error);
     }
   };
 
-  if (isLoggedIn) {
+  if (user) {
     return (
       <Wrapper>
         <LoggedInMessage>
@@ -130,6 +134,7 @@ const Login = () => {
           />
         </Label>
         <SubmitButton type="submit">Login</SubmitButton>
+        {loginError && <ErrorText>{loginError}</ErrorText>}
       </LoginForm>
     </Wrapper>
   );
