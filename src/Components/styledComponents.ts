@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { devices } from "../Hooks/mediaQuery";
 
 const Wrapper = styled.div`
   padding-bottom: 200px;
@@ -6,7 +7,7 @@ const Wrapper = styled.div`
 `;
 
 const Textarea = styled.textarea`
-  width: 40%;
+  width: 70%;
   margin-bottom: 2rem;
   border-radius: 1rem;
   height: 10rem;
@@ -17,6 +18,9 @@ const Textarea = styled.textarea`
   outline: 0px;
   &:focus {
     border: 3px solid #715c7d;
+  }
+  @media (${devices.sm}) {
+    width: 40%;
   }
 `;
 
@@ -43,9 +47,12 @@ const FormButton = styled.button`
 `;
 
 const FormTitle = styled.h1`
-  font-size: 3rem;
+  font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 2rem;
+  @media (${devices.sm}) {
+    font-size: 2.5rem;
+  }
 `;
 
 export { Wrapper, Textarea, FormContainer, FormButton, FormTitle };

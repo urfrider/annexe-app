@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import styled from "styled-components";
+import { devices } from "../Hooks/mediaQuery";
 
 interface IIMageUploadProps {
   onChange: (base64: string) => void;
@@ -10,11 +11,14 @@ interface IIMageUploadProps {
 }
 
 const Wrapper = styled.div`
-  width: 40%;
+  width: 70%;
   padding: 1rem;
   text-align: center;
   border: 3px dotted #715c7d;
   border-radius: 1rem;
+  @media (${devices.sm}) {
+    width: 40%;
+  }
 `;
 
 const ImageUpload: React.FC<IIMageUploadProps> = ({
@@ -54,11 +58,11 @@ const ImageUpload: React.FC<IIMageUploadProps> = ({
     <Wrapper {...getRootProps()}>
       <input {...getInputProps()} />
       {base64 ? (
-        <div className="flex items-center justify-center">
+        <div>
           <img src={base64} height="100" width="100" alt="Uploaded image" />
         </div>
       ) : (
-        <p className="text-white">{label}</p>
+        <p>{label}</p>
       )}
     </Wrapper>
   );

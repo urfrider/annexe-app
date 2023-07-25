@@ -3,7 +3,14 @@ import { useEffect } from "react";
 import { Link, useMatch } from "react-router-dom";
 import styled from "styled-components";
 import { AiOutlineUser } from "react-icons/ai";
+import { BiLogOut } from "react-icons/bi";
 import annexeLogo from "../assets/annexe-logo.png";
+import useLoginModal from "../Hooks/useLoginModal";
+import { useAuth } from "../firebase/firebaseAuth";
+import { signOut } from "firebase/auth";
+import toast from "react-hot-toast";
+import { auth } from "../firebase/firebaseConfig";
+import { devices } from "../Hooks/mediaQuery";
 
 const Nav = styled(motion.nav)`
   display: flex;
@@ -12,8 +19,8 @@ const Nav = styled(motion.nav)`
   position: fixed;
   width: 100%;
   top: 0;
-  font-size: 14px;
-  padding: 20px 60px;
+  font-size: 0.9rem;
+  padding: 1rem 3rem;
   color: white;
   z-index: 100;
 `;
@@ -23,15 +30,21 @@ const Col = styled.div`
   align-items: center;
 `;
 
-const Image = styled.img`
-  height: 2.5rem;
+const Image = styled(motion.img)`
+  height: 2rem;
+  @media (${devices.sm}) {
+    height: 2.5rem;
+  }
 `;
 
 const Logo = styled.div`
-  margin-right: 4rem;
+  margin-right: 1.5rem;
   width: 95px;
   height: 25px;
   color: white;
+  @media (${devices.sm}) {
+    margin-right: 4rem;
+  }
 `;
 
 const Items = styled.ul`
@@ -40,6 +53,7 @@ const Items = styled.ul`
 `;
 
 const Item = styled.li`
+  font-size: 0.8rem;
   position: relative;
   display: flex;
   align-items: center;
@@ -50,6 +64,9 @@ const Item = styled.li`
   &:hover {
     color: ${(props) => props.theme.white.lighter};
   }
+  @media (${devices.sm}) {
+    font-size: 1rem;
+  }
 `;
 
 const Circle = styled(motion.div)`
@@ -59,6 +76,14 @@ const Circle = styled(motion.div)`
   height: 5px;
   border-radius: 50%;
   bottom: -10px;
+`;
+
+const LoginButton = styled(motion.div)`
+  font-size: 0.8rem;
+
+  @media (${devices.sm}) {
+    font-size: 1rem;
+  }
 `;
 
 const navVars = {
@@ -72,12 +97,29 @@ const navVars = {
 };
 
 function Header() {
+  const user: any = useAuth();
   const homeMatch = useMatch("/");
   const storyMatch = useMatch("/story");
   const eventMatch = useMatch("/event");
   const { scrollY } = useScroll();
   const navAnimate = useAnimation();
   const style = { color: "white", fontSize: "2em" };
+  const loginModal = useLoginModal();
+
+  const handleOpen = () => {
+    loginModal.onOpen();
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      loginModal.onClose();
+    } catch (error) {
+      console.log("Error:", error);
+    } finally {
+      toast.success("Logout Successfully");
+    }
+  };
 
   useEffect(() => {
     scrollY.onChange(() => {
@@ -88,11 +130,12 @@ function Header() {
       }
     });
   }, [scrollY]);
+
   return (
     <Nav variants={navVars} animate={navAnimate} initial="top">
       <Col>
         <Logo>
-          <Image src={annexeLogo} alt="Annexe Logo" />
+          <Image src={annexeLogo} alt="Annexe Logo" layoutId="logo" />
         </Logo>
         <Items>
           <Link to="/">
@@ -104,17 +147,29 @@ function Header() {
             <Item>Add Story {storyMatch && <Circle layoutId="circle" />}</Item>
           </Link>
         </Items>
-        <Items>
-          <Link to="/event">
-            <Item>Add Event {eventMatch && <Circle layoutId="circle" />}</Item>
-          </Link>
-        </Items>
+        {user && (
+          <Items>
+            <Link to="/event">
+              <Item>
+                Add Event {eventMatch && <Circle layoutId="circle" />}
+              </Item>
+            </Link>
+          </Items>
+        )}
       </Col>
-      <Col>
-        <Link to="/login">
-          <AiOutlineUser style={style} />
-        </Link>
-      </Col>
+      {user ? (
+        <Col>
+          <LoginButton layoutId="login">
+            <BiLogOut onClick={handleLogout} style={style} />
+          </LoginButton>
+        </Col>
+      ) : (
+        <Col>
+          <LoginButton layoutId="login">
+            <AiOutlineUser onClick={handleOpen} style={style} />
+          </LoginButton>
+        </Col>
+      )}
     </Nav>
   );
 }
