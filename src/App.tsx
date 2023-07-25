@@ -6,6 +6,7 @@ import Story from "./pages/Story";
 import Event from "./pages/Event";
 import Login from "./pages/Login";
 import { Toaster } from "react-hot-toast";
+import LoginModal from "./Components/LoginModal";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <ReactQueryDevtools initialIsOpen={true} />
       <Router>
         <Toaster />
+        <LoginModal />
         <Header />
         <Routes>
           <Route path="/" element={<Home />}>

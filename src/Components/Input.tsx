@@ -1,8 +1,9 @@
 import React from "react";
 import styled from "styled-components";
+import { devices } from "../Hooks/mediaQuery";
 
 const CustomInput = styled.input`
-  width: 40%;
+  width: 70%;
   margin-bottom: 2rem;
   border-radius: 1rem;
   height: 3rem;
@@ -12,6 +13,9 @@ const CustomInput = styled.input`
   outline: 0px;
   &:focus {
     border: 3px solid #715c7d;
+  }
+  @media (${devices.sm}) {
+    width: 40%;
   }
 `;
 
@@ -37,7 +41,7 @@ const Input: React.FC<InputProps> = ({
       disabled={disabled}
       onChange={onChange}
       value={value}
-      required
+      required={required}
       type={type}
       placeholder={placeholder}
     />

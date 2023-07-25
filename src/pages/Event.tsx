@@ -10,14 +10,18 @@ import {
 } from "../Components/styledComponents";
 import styled from "styled-components";
 import { toast } from "react-hot-toast";
+import { devices } from "../Hooks/mediaQuery";
 
 const ToggleButton = styled.div<{ isEvent: boolean }>`
   display: flex;
-  width: 30%;
+  width: 50%;
   border: 1px solid #715c7d;
   margin-bottom: 3rem;
   height: 3rem;
   border-radius: 0.6rem;
+  @media (${devices.sm}) {
+    width: 30%;
+  }
   .event {
     display: flex;
     flex: 1;
