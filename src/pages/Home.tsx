@@ -7,8 +7,6 @@ import { BiLeftArrow, BiRightArrow } from "react-icons/bi";
 import { ClipLoader } from "react-spinners";
 import { getDownloadURL, ref } from "firebase/storage";
 import { collection, getDocs, query, doc, getDoc } from "firebase/firestore";
-
-import useMediaQuery from "../Hooks/useMediaQuery";
 import { Wrapper } from "../Components/styledComponents";
 import { getMovies, IGetMoviesResult } from "../Hooks/api";
 import { makeImagePath } from "../Hooks/utils";
@@ -204,7 +202,6 @@ const leftVars = {
 };
 
 function Home() {
-  const isGTMediumScreen = useMediaQuery("(min-width: 1060px)");
   const navigate = useNavigate();
   const offset = 6;
   const { data, isLoading } = useQuery<IGetMoviesResult>(
@@ -231,11 +228,10 @@ function Home() {
         };
       });
       const results = await Promise.all(list); // wait for all the URLs to resolve
-      return results
+      return results;
     }
   );
-  console.log(historyData)
-
+  console.log(historyData);
 
   const increaseIndex = () => {
     setLeft(false);

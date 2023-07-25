@@ -170,10 +170,11 @@ const Slides = (props: any) => {
   const [left, setLeft] = useState(false);
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
-  const [selectedData, setSelectedData] = useState<any>({})  
+  const [selectedData, setSelectedData] = useState<any>({});
   const offset = 3;
   const navigate = useNavigate();
   const dataMatch = useMatch("/data/:dataId");
+  console.log(dataMatch);
 
   const toggleLeaving = () => setLeaving((prev) => !prev);
 
@@ -199,23 +200,20 @@ const Slides = (props: any) => {
   };
 
   const onBoxClick = async (dataId: number) => {
-    const selected = await props.data?.find((data: any) => data.id  == dataId)
-    setSelectedData(selected)
-    console.log(selectedData);
+    // const selected = await props.data?.find((data: any) => data.id == dataId);
+    // setSelectedData(selected);
+    // console.log(selectedData);
     navigate(`data/${dataId}`);
-    console.log(dataMatch)
   };
 
   const overlayOnClick = () => {
     navigate(-1);
   };
 
-  
-
-  // const clickedData =
-  //   dataMatch?.params.dataId &&
-  //   props.data?.find((data: any) => data.id + "" === dataMatch.params.dataId);
-
+  const clickedData =
+    dataMatch?.params.dataId &&
+    props.data?.find((data: any) => data.id + "" === dataMatch.params.dataId);
+  console.log(clickedData);
 
   return (
     <>
@@ -270,16 +268,16 @@ const Slides = (props: any) => {
               style={{ top: 50 }}
               layoutId={dataMatch.params.dataId + ""}
             >
-              {selectedData && (
+              {clickedData && (
                 <>
                   <MovieCover
-                    src={selectedData.imageUrl}
+                    src={clickedData.posterUrl}
                     style={{
                       backgroundImage: `linear-gradient(to top, black, transparent)`,
                     }}
                   />
-                  <MovieTitle>{selectedData.title}</MovieTitle>
-                  <MovieOverview>{selectedData.description}</MovieOverview>
+                  <MovieTitle>{clickedData.title}</MovieTitle>
+                  <MovieOverview>{clickedData.description}</MovieOverview>
                 </>
               )}
             </MovieDetail>
