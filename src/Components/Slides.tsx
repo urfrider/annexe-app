@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { BiLeftArrow, BiRightArrow } from "react-icons/bi";
 import { useMatch, useNavigate } from "react-router-dom";
@@ -123,33 +123,22 @@ const boxVars = {
   },
 };
 
-const rightVars = {
-  hidden: {
-    x: window.innerWidth - 5,
-    opacity: 0,
+const vars = {
+  hidden: (direction: number) => {
+    return {
+      x: direction > 0 ? window.innerWidth - 5 : -window.innerWidth + 5,
+      opacity: 0,
+    };
   },
   visible: {
     x: 0,
     opacity: 1,
   },
-  exit: {
-    x: -window.innerWidth + 5,
-    opacity: 0,
-  },
-};
-
-const leftVars = {
-  hidden: {
-    x: -window.innerWidth + 5,
-    opacity: 0,
-  },
-  visible: {
-    x: 0,
-    opacity: 1,
-  },
-  exit: {
-    x: window.innerWidth - 5,
-    opacity: 0,
+  exit: (direction: number) => {
+    return {
+      x: direction > 0 ? -window.innerWidth + 5 : window.innerWidth - 5,
+      opacity: 0,
+    };
   },
 };
 
@@ -166,11 +155,25 @@ const detailVars = {
 
 const style = { color: "white", fontSize: "2em" };
 
-const Slides = (props: any) => {
-  const [left, setLeft] = useState(false);
+interface IData {
+  id: number;
+  title: string;
+  description: string;
+  organisation: string;
+  posterImage: string;
+  posterUrl: string;
+}
+
+interface IProps {
+  data: IData[];
+  name: string;
+}
+
+const Slides = (props: IProps) => {
+  console.log(props);
+  const [direction, setDirection] = useState(0);
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
-  const [selectedData, setSelectedData] = useState<any>({});
   const offset = 3;
   const navigate = useNavigate();
   const dataMatch = useMatch("/data/:dataId");
@@ -179,7 +182,7 @@ const Slides = (props: any) => {
   const toggleLeaving = () => setLeaving((prev) => !prev);
 
   const increaseIndex = () => {
-    setLeft(false);
+    setDirection(1);
     if (props.data) {
       if (leaving) return;
       toggleLeaving();
@@ -188,8 +191,9 @@ const Slides = (props: any) => {
       setIndex((prev) => (prev === totalIndex ? 0 : prev + 1));
     }
   };
+
   const decreaseIndex = () => {
-    setLeft(true);
+    setDirection(-1);
     if (props.data) {
       if (leaving) return;
       toggleLeaving();
@@ -200,9 +204,6 @@ const Slides = (props: any) => {
   };
 
   const onBoxClick = async (dataId: number) => {
-    // const selected = await props.data?.find((data: any) => data.id == dataId);
-    // setSelectedData(selected);
-    // console.log(selectedData);
     navigate(`data/${dataId}`);
   };
 
@@ -221,9 +222,14 @@ const Slides = (props: any) => {
         <HeaderTitle>{props.name}</HeaderTitle>
         <BiLeftArrow style={style} onClick={decreaseIndex} />
         <Slider>
-          <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
+          <AnimatePresence
+            initial={false}
+            onExitComplete={toggleLeaving}
+            custom={direction}
+          >
             <Row
-              variants={left ? leftVars : rightVars}
+              variants={vars}
+              custom={direction}
               animate="visible"
               initial="hidden"
               exit="exit"
@@ -232,7 +238,7 @@ const Slides = (props: any) => {
             >
               {props.data
                 ?.slice(index * offset, index * offset + offset)
-                .map((data: any) => (
+                .map((data: IData) => (
                   <Box
                     onClick={() => {
                       onBoxClick(data.id);
