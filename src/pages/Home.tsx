@@ -2,13 +2,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { getMovies, IGetMoviesResult } from "../Hooks/api";
-import { makeImagePath } from "../Hooks/utils";
 import { useMatch, useNavigate } from "react-router-dom";
 import { BiLeftArrow, BiRightArrow } from "react-icons/bi";
+import { ClipLoader } from "react-spinners";
+import { getDownloadURL, ref } from "firebase/storage";
+import { collection, getDocs, query, doc, getDoc } from "firebase/firestore";
+
 import useMediaQuery from "../Hooks/useMediaQuery";
 import { Wrapper } from "../Components/styledComponents";
-import { ClipLoader } from "react-spinners";
+import { getMovies, IGetMoviesResult } from "../Hooks/api";
+import { makeImagePath } from "../Hooks/utils";
+import { db, storage } from "../firebase/firebaseConfig";
+import Slides from "../Components/Slides";
 
 const Loader = styled.div`
   display: flex;
@@ -211,6 +216,27 @@ function Home() {
   const [left, setLeft] = useState(false);
   const movieMatch = useMatch("/movies/:movieId");
   console.log(movieMatch);
+
+  const { isLoading: historyLoading, data: historyData } = useQuery(
+    "history",
+    async () => {
+      const snapshot = await getDocs(collection(db, "history"));
+      const list = snapshot.docs.map(async (doc) => {
+        const data = doc.data();
+        const posterUrl = await getDownloadURL(ref(storage, data.posterImage)); // get poster URL
+        return {
+          id: doc.id,
+          ...data,
+          posterUrl,
+        };
+      });
+      const results = await Promise.all(list); // wait for all the URLs to resolve
+      return results
+    }
+  );
+  console.log(historyData)
+
+
   const increaseIndex = () => {
     setLeft(false);
     if (data) {
@@ -243,6 +269,7 @@ function Home() {
     data?.results.find((movie) => movie.id + "" === movieMatch.params.movieId);
   console.log(clickedMovie);
   const style = { color: "white", fontSize: "2em" };
+
   return (
     <Wrapper>
       {isLoading ? (
@@ -260,7 +287,7 @@ function Home() {
             </Overview>
           </Banner>
 
-          <SliderWrapper>
+          {/* <SliderWrapper>
             <HeaderTitle>Event</HeaderTitle>
             <BiLeftArrow style={style} onClick={decreaseIndex} />
             <Slider>
@@ -298,49 +325,11 @@ function Home() {
               </AnimatePresence>
             </Slider>
             <BiRightArrow style={style} onClick={increaseIndex} />
-          </SliderWrapper>
+          </SliderWrapper> */}
 
-          <SliderWrapper>
-            <HeaderTitle>History</HeaderTitle>
-            <BiLeftArrow style={style} onClick={decreaseIndex} />
-            <Slider>
-              <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
-                <Row
-                  variants={left ? leftVars : rightVars}
-                  animate="visible"
-                  initial="hidden"
-                  exit="exit"
-                  key={index}
-                  transition={{ type: "tween", duration: 1 }}
-                >
-                  {data?.results
-                    .slice(1)
-                    .slice(index * offset, index * offset + offset)
-                    .map((movie) => (
-                      <Box
-                        onClick={() => {
-                          onBoxClick(movie.id);
-                        }}
-                        layoutId={movie.id + ""}
-                        variants={boxVars}
-                        whileHover="hover"
-                        initial="normal"
-                        transition={{ type: "tween" }}
-                        key={movie.id}
-                        bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
-                      >
-                        <Detail variants={detailVars}>
-                          <h4>{movie.title}</h4>
-                        </Detail>
-                      </Box>
-                    ))}
-                </Row>
-              </AnimatePresence>
-            </Slider>
-            <BiRightArrow style={style} onClick={increaseIndex} />
-          </SliderWrapper>
+          <Slides name="History" data={historyData} />
 
-          <SliderWrapper style={{ marginBottom: 0 }}>
+          {/* <SliderWrapper style={{ marginBottom: 0 }}>
             <HeaderTitle>Story</HeaderTitle>
             <BiLeftArrow style={style} onClick={decreaseIndex} />
             <Slider>
@@ -378,7 +367,7 @@ function Home() {
               </AnimatePresence>
             </Slider>
             <BiRightArrow style={style} onClick={increaseIndex} />
-          </SliderWrapper>
+          </SliderWrapper> */}
 
           <AnimatePresence>
             {movieMatch && (
