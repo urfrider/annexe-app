@@ -256,6 +256,9 @@ const Slides = (props: IProps) => {
 
   const overlayOnClick = () => {
     navigate(-1);
+
+    // prevent double clicks
+    setTimeout(() => {}, 1000);
   };
 
   const clickedData =
