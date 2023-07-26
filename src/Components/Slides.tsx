@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { BiLeftArrow, BiRightArrow } from "react-icons/bi";
 import { useMatch, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { devices } from "../Hooks/mediaQuery";
+import { BsFillMicFill } from "react-icons/bs";
 
 const Detail = styled(motion.div)`
   padding: 10px;
@@ -74,38 +76,81 @@ const Overlay = styled(motion.div)`
   opacity: 0;
 `;
 
-const MovieDetail = styled(motion.div)`
+const WorkDetail = styled(motion.div)`
   position: fixed;
   background-color: ${(props) => props.theme.black.lighter};
-  width: 40vw;
+  width: 70vw;
   height: 80vh;
+  overflow-y: scroll;
   left: 0;
   right: 0;
   margin: 0 auto;
   border-radius: 10px;
-  overflow: hidden;
+  overflow: auto;
+  background-color: #3d3d3d;
+  ::-webkit-scrollbar {
+    width: 8px; /* width of the entire scrollbar */
+  }
+  ::-webkit-scrollbar-track {
+    background: #3d3d3d; /* color of the tracking area */
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #715c7d; /* color of the scroll thumb */
+    border-radius: 20px; /* roundness of the scroll thumb */
+  }
+  @media (${devices.sm}) {
+    width: 50vw;
+  }
+  @media (${devices.md}) {
+    width: 40vw;
+  }
 `;
 
-const MovieCover = styled.img`
+const WorkCover = styled.img`
   width: 100%;
   background-size: cover;
   background-position: center center;
-  height: 300px;
+  height: 18rem;
 `;
 
-const MovieTitle = styled.h2`
+const WorkTitle = styled.h2`
   color: ${(props) => props.theme.white.lighter};
   padding: 20px;
-  font-size: 46px;
+  font-size: 1.5rem;
   position: relative;
-  top: -80px;
+  top: -5rem;
+  color: #fffa65;
+  @media (${devices.sm}) {
+    font-size: 1.8rem;
+  }
+  @media (${devices.md}) {
+    font-size: 2rem;
+  }
 `;
 
-const MovieOverview = styled.p`
+const WorkOverview = styled.p`
   padding: 20px;
+  width: 95%;
   position: relative;
-  top: -80px;
+  top: -5rem;
   color: ${(props) => props.theme.white.lighter};
+
+  @media (${devices.md}) {
+    font-size: 1rem;
+  }
+`;
+
+const MicLogo = styled.div`
+  position: absolute;
+  z-index: 10;
+  right: 0.5rem;
+  display: flex;
+  cursor: pointer;
+  border: 1px solid white;
+  justify-content: flex-end;
+  width: min-content;
+  border-radius: 50%;
+  padding: 5px;
 `;
 
 const boxVars = {
@@ -179,6 +224,8 @@ const Slides = (props: IProps) => {
   const dataMatch = useMatch("/data/:dataId");
   console.log(dataMatch);
 
+  const onClick = () => console.log("CLICKEND");
+
   const toggleLeaving = () => setLeaving((prev) => !prev);
 
   const increaseIndex = () => {
@@ -187,7 +234,7 @@ const Slides = (props: IProps) => {
       if (leaving) return;
       toggleLeaving();
       const totalData = props.data.length;
-      const totalIndex = Math.floor(totalData / offset);
+      const totalIndex = Math.ceil(totalData / offset) - 1;
       setIndex((prev) => (prev === totalIndex ? 0 : prev + 1));
     }
   };
@@ -198,7 +245,7 @@ const Slides = (props: IProps) => {
       if (leaving) return;
       toggleLeaving();
       const totalData = props.data.length;
-      const totalIndex = Math.floor(totalData / offset);
+      const totalIndex = Math.ceil(totalData / offset) - 1;
       setIndex((prev) => (prev === 0 ? totalIndex : prev - 1));
     }
   };
@@ -209,6 +256,9 @@ const Slides = (props: IProps) => {
 
   const overlayOnClick = () => {
     navigate(-1);
+
+    // prevent double clicks
+    setTimeout(() => {}, 1000);
   };
 
   const clickedData =
@@ -270,23 +320,26 @@ const Slides = (props: IProps) => {
               exit={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             />
-            <MovieDetail
+            <WorkDetail
               style={{ top: 50 }}
               layoutId={dataMatch.params.dataId + ""}
             >
               {clickedData && (
                 <>
-                  <MovieCover
+                  <WorkCover
                     src={clickedData.posterUrl}
                     style={{
                       backgroundImage: `linear-gradient(to top, black, transparent)`,
                     }}
                   />
-                  <MovieTitle>{clickedData.title}</MovieTitle>
-                  <MovieOverview>{clickedData.description}</MovieOverview>
+                  <MicLogo onClick={onClick}>
+                    <BsFillMicFill style={{ cursor: "pointer" }} />
+                  </MicLogo>
+                  <WorkTitle>{clickedData.title}</WorkTitle>
+                  <WorkOverview>{clickedData.description}</WorkOverview>
                 </>
               )}
-            </MovieDetail>
+            </WorkDetail>
           </>
         )}
       </AnimatePresence>
