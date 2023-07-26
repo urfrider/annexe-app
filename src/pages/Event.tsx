@@ -12,6 +12,8 @@ import styled from "styled-components";
 import { toast } from "react-hot-toast";
 import { devices } from "../Hooks/mediaQuery";
 
+import { insertDb, uploadImage } from "../firebase/functions";
+
 const ToggleButton = styled.div<{ isEvent: boolean }>`
   display: flex;
   width: 50%;
@@ -57,19 +59,23 @@ const ToggleButton = styled.div<{ isEvent: boolean }>`
 function Event() {
   const [event, setEvent] = useState(true);
   const [title, setTitle] = useState("");
-  const [organization, setOrganization] = useState("");
+  const [organisation, setOrganisation] = useState("");
   const [description, setDescription] = useState("");
   const [posterImage, setPosterImage] = useState("");
 
-  const onSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    var type = ""
+    event ? (type = "events") : (type = "history")
     const data = {
       title: title,
-      organization: organization,
+      organisation: organisation,
       description: description,
-      posterImage: posterImage,
+      posterImage: `/${type}/${organisation}.png`,
     };
-    console.log(data);
+    console.log(data)
+    uploadImage(posterImage, type, organisation)
+    await insertDb(data, type)
     toast.success("Added successfully");
   };
 
@@ -95,7 +101,7 @@ function Event() {
         <Input
           placeholder="Organization"
           required
-          onChange={(e) => setOrganization(e.target.value)}
+          onChange={(e) => setOrganisation(e.target.value)}
         />
         <Textarea
           placeholder="Description"
