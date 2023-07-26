@@ -80,7 +80,7 @@ const Circle = styled(motion.div)`
 
 const LoginButton = styled(motion.div)`
   font-size: 0.8rem;
-
+  cursor: pointer;
   @media (${devices.sm}) {
     font-size: 1rem;
   }

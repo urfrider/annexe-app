@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { ClipLoader } from "react-spinners";
@@ -6,9 +5,10 @@ import { getDownloadURL, ref } from "firebase/storage";
 import { collection, getDocs, query, doc, getDoc } from "firebase/firestore";
 import { Wrapper } from "../Components/styledComponents";
 import { getMovies, IGetMoviesResult } from "../Hooks/api";
-import { makeImagePath } from "../Hooks/utils";
 import { db, storage } from "../firebase/firebaseConfig";
 import Slides from "../Components/Slides";
+import annexeBg from "../assets/annexe-bg.jpg";
+import { devices } from "../Hooks/mediaQuery";
 
 const Loader = styled.div`
   display: flex;
@@ -22,20 +22,33 @@ const Banner = styled.div<{ bgPhoto: string }>`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 60px;
+  padding: 2rem;
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)),
     url(${(props) => props.bgPhoto});
   background-size: cover;
 `;
 
 const Title = styled.h2`
-  font-size: 68px;
+  font-size: 2rem;
   margin-bottom: 20px;
+  color: #fffa65;
+  @media (${devices.sm}) {
+    font-size: 3rem;
+  }
+  @media (${devices.md}) {
+    font-size: 4.5rem;
+  }
 `;
 
 const Overview = styled.p`
-  font-size: 30px;
-  width: 50%;
+  font-size: 1rem;
+  width: 60%;
+  @media (${devices.sm}) {
+    font-size: 1.2rem;
+  }
+  @media (${devices.md}) {
+    font-size: 1.5rem;
+  }
 `;
 
 function Home() {
@@ -74,8 +87,8 @@ function Home() {
         </Loader>
       ) : (
         <>
-          <Banner bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}>
-            <Title>Welcome to The Annexe Communities</Title>
+          <Banner bgPhoto={annexeBg}>
+            <Title>Welcome to Annexe Communities</Title>
             <Overview>
               Annexe Communities is a community-led development trust working
               with people living in central and west Glasgow. We work from our
