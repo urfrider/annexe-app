@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Story from "./pages/Story";
 import Event from "./pages/Event";
 import Login from "./pages/Login";
+import Validation from "./pages/Validation";
 import { Toaster } from "react-hot-toast";
 import LoginModal from "./Components/LoginModal";
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="/story" element={<Story />} />
           <Route path="/event" element={<Event />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/validation" element={<Validation />} />
         </Routes>
       </Router>
     </>
