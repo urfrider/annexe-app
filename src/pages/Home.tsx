@@ -44,23 +44,26 @@ function Home() {
     getMovies
   );
 
+  const fetchHistory = async () => {
+    const snapshot = await getDocs(collection(db, "history"));
+    const list = snapshot.docs.map(async (doc) => {
+      const data = doc.data();
+      const posterUrl = await getDownloadURL(ref(storage, data.posterImage)); // get poster URL
+      return {
+        id: doc.id,
+        ...data,
+        posterUrl,
+      };
+    });
+    const results = await Promise.all(list); // wait for all the URLs to resolve
+    return results;
+  };
+
   const { isLoading: historyLoading, data: historyData } = useQuery(
     "history",
-    async () => {
-      const snapshot = await getDocs(collection(db, "history"));
-      const list = snapshot.docs.map(async (doc) => {
-        const data = doc.data();
-        const posterUrl = await getDownloadURL(ref(storage, data.posterImage)); // get poster URL
-        return {
-          id: doc.id,
-          ...data,
-          posterUrl,
-        };
-      });
-      const results = await Promise.all(list); // wait for all the URLs to resolve
-      return results;
-    }
+    fetchHistory
   );
+
   console.log(historyData);
 
   return (
@@ -80,7 +83,7 @@ function Home() {
             </Overview>
           </Banner>
 
-          <Slides name="History" data={historyData} />
+          <Slides name="History" data={historyData as any} />
 
           {/* <Slides name="Events" data={historyData} />
 
