@@ -215,7 +215,6 @@ interface IProps {
 }
 
 const Slides = (props: IProps) => {
-  console.log(props);
   const [direction, setDirection] = useState(0);
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
@@ -264,6 +263,8 @@ const Slides = (props: IProps) => {
   const clickedData =
     dataMatch?.params.dataId &&
     props.data?.find((data: any) => data.id + "" === dataMatch.params.dataId);
+  console.log(dataMatch)
+  console.log(props.data)
   console.log(clickedData);
 
   return (

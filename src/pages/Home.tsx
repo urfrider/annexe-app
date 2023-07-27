@@ -52,13 +52,9 @@ const Overview = styled.p`
 `;
 
 function Home() {
-  const { data, isLoading } = useQuery<IGetMoviesResult>(
-    ["movies", "nowPlaying"],
-    getMovies
-  );
 
-  const fetchHistory = async () => {
-    const snapshot = await getDocs(collection(db, "history"));
+  const fetchData = async (collectionName : string) => {
+    const snapshot = await getDocs(collection(db, collectionName));
     const list = snapshot.docs.map(async (doc) => {
       const data = doc.data();
       const posterUrl = await getDownloadURL(ref(storage, data.posterImage)); // get poster URL
@@ -74,14 +70,23 @@ function Home() {
 
   const { isLoading: historyLoading, data: historyData } = useQuery(
     "history",
-    fetchHistory
+    async () => fetchData("history")
   );
 
-  console.log(historyData);
+  const { isLoading: storiesLoading, data: storiesData } = useQuery(
+    "stories",
+    async () => fetchData("stories")
+  );
+
+  const { isLoading: eventsLoading, data: eventsData } = useQuery(
+    "events",
+    async () => fetchData("events")
+  );
+
 
   return (
     <Wrapper>
-      {isLoading ? (
+      {(historyLoading&&storiesLoading&&eventsLoading) ? (
         <Loader>
           <ClipLoader color="lightblue" size={80} />
         </Loader>
@@ -96,11 +101,15 @@ function Home() {
             </Overview>
           </Banner>
 
+          
+
+          <Slides name="Events" data={eventsData as any} />
+
+          <Slides name="Stories" data={storiesData as any} />
+
           <Slides name="History" data={historyData as any} />
 
-          {/* <Slides name="Events" data={historyData} />
-
-          <Slides name="Stories" data={historyData} /> */}
+          
         </>
       )}
     </Wrapper>
