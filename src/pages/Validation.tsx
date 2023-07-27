@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { collection, getDocs } from "firebase/firestore";
 import { db, storage } from "../firebase/firebaseConfig";
@@ -89,8 +89,18 @@ const ButtonWrapper = styled.div`
   align-items: center;
 `;
 
+export interface IStory {
+  id: number;
+  title: string;
+  description: string;
+  organisation: string;
+  posterImage: string;
+  posterUrl: string;
+  validationStatus: string;
+}
+
 const Validation = () => {
-  const [storiesData, setStoriesData] = useState<any>(null); // State to hold stories data
+  const [storiesData, setStoriesData] = useState<IStory[]>([]); // State to hold stories data
 
   const fetchStories = async () => {
     const snapshot = await getDocs(collection(db, "history"));
@@ -101,31 +111,33 @@ const Validation = () => {
         id: doc.id,
         ...data,
         posterUrl,
-        validationStatus: null, // for testing
+        validationStatus: "", // for testing
       };
     });
     const results = await Promise.all(list); // wait for all the URLs to resolve
+
+    //@ts-ignore
     setStoriesData(results); // Save data in state
   };
 
   const { isLoading: storiesLoading } = useQuery("stories", fetchStories);
 
   // Function to handle validation status change
-  const handleValidationChange = (id: any, status: any) => {
-    setStoriesData((prevData: any) =>
-      prevData.map((story: any) =>
+  const handleValidationChange = (id: number, status: string) => {
+    setStoriesData((prevData) =>
+      prevData.map((story: IStory) =>
         story.id === id ? { ...story, validationStatus: status } : story
       )
     );
   };
 
   // Function to accept the story
-  const handleAcceptStory = (id: any) => {
+  const handleAcceptStory = (id: number) => {
     handleValidationChange(id, "accepted");
   };
 
   // Function to decline the story
-  const handleDeclineStory = (id: any) => {
+  const handleDeclineStory = (id: number) => {
     handleValidationChange(id, "declined");
   };
 
@@ -157,7 +169,7 @@ const Validation = () => {
                 </TableRowStyled>
               </TableHead>
               <TableBody>
-                {storiesData?.map((story: any) => (
+                {storiesData?.map((story: IStory) => (
                   <TableRowStyled key={story.id}>
                     {/* <TableCell>{story.id}</TableCell> */}
                     <Cell>{story.title}</Cell>
