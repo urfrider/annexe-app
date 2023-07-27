@@ -1,14 +1,11 @@
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { ClipLoader } from "react-spinners";
-import { getDownloadURL, ref } from "firebase/storage";
-import { collection, getDocs, query, doc, getDoc } from "firebase/firestore";
 import { Wrapper } from "../Components/styledComponents";
-import { getMovies, IGetMoviesResult } from "../Hooks/api";
-import { db, storage } from "../firebase/firebaseConfig";
-import Slides from "../Components/Slides";
+import Slides, { IData } from "../Components/Slides";
 import annexeBg from "../assets/annexe-bg.jpg";
 import { devices } from "../Hooks/mediaQuery";
+import { fetchHistory } from "../Hooks/api";
 
 const Loader = styled.div`
   display: flex;

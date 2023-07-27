@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Input from "../Components/Input";
-import ImageUpload from "../Components/ImageUpload";
+import FileUpload from "../Components/FileUpload";
 import { Link } from "react-router-dom";
 import {
   FormButton,
@@ -11,6 +11,7 @@ import {
 } from "../Components/styledComponents";
 import styled from "styled-components";
 import { useAuth } from "../firebase/firebaseAuth";
+import { User } from "firebase/auth";
 
 const ButtonDiv = styled.div`
   position: absolute;
@@ -26,15 +27,15 @@ const Button = styled.button`
   font-size: 16px;
   font-weight: bold;
   color: #ffffff;
-  background-color: #007bff;
+  background-color: #715c7d;
   border: none;
-  border-radius: 4px;
+  border-radius: 20px;
   cursor: pointer;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease-in-out;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #d2a4ed;
   }
 
   &:focus {
@@ -45,9 +46,9 @@ const Button = styled.button`
 function Story() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [posterImage, setPosterImage] = useState("");
+  const [posterImage, setPosterImage] = useState<string[]>([]);
 
-  const user: any = useAuth();
+  const user: User | null = useAuth();
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -64,7 +65,7 @@ function Story() {
       {user && (
         <ButtonDiv>
           <Link to="/validation">
-            <Button>Click here to validate stories</Button>
+            <Button>Validate Stories</Button>
           </Link>
         </ButtonDiv>
       )}
@@ -81,10 +82,10 @@ function Story() {
           required={true}
           onChange={(e) => setDescription(e.target.value)}
         />
-        <ImageUpload
+        <FileUpload
           value={posterImage}
           onChange={(image) => setPosterImage(image)}
-          label="Upload poster image"
+          label="UPLOAD FILES"
         />
         <FormButton>Submit</FormButton>
       </FormContainer>

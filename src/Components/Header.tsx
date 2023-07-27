@@ -10,9 +10,11 @@ import { useAuth } from "../firebase/firebaseAuth";
 import { signOut } from "firebase/auth";
 import toast from "react-hot-toast";
 import { auth } from "../firebase/firebaseConfig";
+import { User } from "firebase/auth";
 import { devices } from "../Hooks/mediaQuery";
 
-const Nav = styled(motion.nav)`
+//@ts-ignore
+const Nav = styled(motion.nav)<{ variants }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -97,7 +99,7 @@ const navVars = {
 };
 
 function Header() {
-  const user: any = useAuth();
+  const user: User | null = useAuth();
   const homeMatch = useMatch("/");
   const storyMatch = useMatch("/story");
   const eventMatch = useMatch("/event");

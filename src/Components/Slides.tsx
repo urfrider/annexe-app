@@ -82,6 +82,7 @@ const WorkDetail = styled(motion.div)`
   width: 70vw;
   height: 80vh;
   overflow-y: scroll;
+  top: 70px;
   left: 0;
   right: 0;
   margin: 0 auto;
@@ -200,7 +201,7 @@ const detailVars = {
 
 const style = { color: "white", fontSize: "2em" };
 
-interface IData {
+export interface IData {
   id: number;
   title: string;
   description: string;
@@ -255,9 +256,6 @@ const Slides = (props: IProps) => {
 
   const overlayOnClick = () => {
     navigate(-1);
-
-    // prevent double clicks
-    setTimeout(() => {}, 1000);
   };
 
   const clickedData =
@@ -266,6 +264,8 @@ const Slides = (props: IProps) => {
   console.log(dataMatch)
   console.log(props.data)
   console.log(clickedData);
+
+  console.log(props.data);
 
   return (
     <>
@@ -321,10 +321,7 @@ const Slides = (props: IProps) => {
               exit={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             />
-            <WorkDetail
-              style={{ top: 50 }}
-              layoutId={dataMatch.params.dataId + ""}
-            >
+            <WorkDetail layoutId={dataMatch.params.dataId + ""}>
               {clickedData && (
                 <>
                   <WorkCover

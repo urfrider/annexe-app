@@ -1,31 +1,18 @@
-import axios from "axios";
+import { collection, getDocs, query, doc, getDoc } from "firebase/firestore";
+import { getDownloadURL, ref } from "firebase/storage";
+import { db, storage } from "../firebase/firebaseConfig";
 
-const API_KEY = "844dc95d3ddc96f564cf9a2e16cd5545";
-const BASE_URL = "https://api.themoviedb.org";
-
-interface IMovie {
-  backdrop_path: string;
-  id: number;
-  poster_path: string;
-  title: string;
-  overview: string;
-}
-
-export interface IGetMoviesResult {
-  dates: {
-    maximum: string;
-    minimum: string;
-  };
-  pages: number;
-  results: IMovie[];
-  total_pages: number;
-  total_results: number;
-}
-
-export async function getMovies() {
-  const movies = await axios.get(
-    `${BASE_URL}/3/movie/now_playing?api_key=${API_KEY}&language=en-US&page=1`
-  );
-
-  return movies.data;
-}
+export const fetchHistory = async () => {
+  const snapshot = await getDocs(collection(db, "history"));
+  const list = snapshot.docs.map(async (doc) => {
+    const data = doc.data();
+    const posterUrl = await getDownloadURL(ref(storage, data.posterImage)); // get poster URL
+    return {
+      id: doc.id,
+      ...data,
+      posterUrl,
+    };
+  });
+  const results = await Promise.all(list); // wait for all the URLs to resolve
+  return results;
+};

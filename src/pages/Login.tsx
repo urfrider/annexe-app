@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import styled from "styled-components";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "../firebase/firebaseConfig";
-import { useAuth } from '../firebase/firebaseAuth';
+import { useAuth } from "../firebase/firebaseAuth";
+import { User } from "firebase/auth";
 
 const Wrapper = styled.div`
   height: 100vh;
@@ -78,9 +79,9 @@ const ErrorText = styled.div`
 `;
 
 const Login = () => {
-  const  user : any = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const user: User | null = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -88,8 +89,8 @@ const Login = () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      console.log('Error:', error);
-      setLoginError('Invalid email or password. Please try again.');
+      console.log("Error:", error);
+      setLoginError("Invalid email or password. Please try again.");
     }
   };
 
@@ -97,7 +98,7 @@ const Login = () => {
     try {
       await signOut(auth);
     } catch (error) {
-      console.log('Error:', error);
+      console.log("Error:", error);
     }
   };
 

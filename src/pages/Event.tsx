@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Input from "../Components/Input";
-import ImageUpload from "../Components/ImageUpload";
+import FileUpload from "../Components/FileUpload";
 import {
   FormButton,
   FormContainer,
@@ -61,21 +61,21 @@ function Event() {
   const [title, setTitle] = useState("");
   const [organisation, setOrganisation] = useState("");
   const [description, setDescription] = useState("");
-  const [posterImage, setPosterImage] = useState("");
+  const [posterImage, setPosterImage] = useState<string[]>([]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    var type = ""
-    event ? (type = "events") : (type = "history")
+    var type = "";
+    event ? (type = "events") : (type = "history");
     const data = {
       title: title,
       organisation: organisation,
       description: description,
       posterImage: `/${type}/${organisation}.png`,
     };
-    console.log(data)
-    uploadImage(posterImage, type, organisation)
-    await insertDb(data, type)
+    console.log(data);
+    uploadImage(posterImage, type, organisation);
+    await insertDb(data, type);
     toast.success("Added successfully");
   };
 
@@ -108,10 +108,10 @@ function Event() {
           required={true}
           onChange={(e) => setDescription(e.target.value)}
         />
-        <ImageUpload
+        <FileUpload
           value={posterImage}
           onChange={(image) => setPosterImage(image)}
-          label="Upload poster image"
+          label="UPLOAD FILES"
         />
         <FormButton>Submit</FormButton>
       </FormContainer>

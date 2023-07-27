@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "../firebase/firebaseConfig";
 import { useAuth } from "../firebase/firebaseAuth";
+import { User } from "firebase/auth";
 import { motion } from "framer-motion";
 import annexeLogo from "../assets/annexe-logo.png";
 import useLoginModal from "../Hooks/useLoginModal";
@@ -90,7 +91,8 @@ const Close = styled.span`
 `;
 
 const LoginModal = () => {
-  const user: any = useAuth();
+  const user: User | null = useAuth();
+  console.log(user);
   const loginModal = useLoginModal();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
