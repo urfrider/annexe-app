@@ -5,7 +5,7 @@ import { Wrapper } from "../Components/styledComponents";
 import Slides, { IData } from "../Components/Slides";
 import annexeBg from "../assets/annexe-bg.jpg";
 import { devices } from "../Hooks/mediaQuery";
-import { fetchHistory } from "../Hooks/api";
+import { fetchData } from "../Hooks/api";
 
 const Loader = styled.div`
   display: flex;
@@ -50,20 +50,6 @@ const Overview = styled.p`
 
 function Home() {
 
-  const fetchData = async (collectionName : string) => {
-    const snapshot = await getDocs(collection(db, collectionName));
-    const list = snapshot.docs.map(async (doc) => {
-      const data = doc.data();
-      const posterUrl = await getDownloadURL(ref(storage, data.posterImage)); // get poster URL
-      return {
-        id: doc.id,
-        ...data,
-        posterUrl,
-      };
-    });
-    const results = await Promise.all(list); // wait for all the URLs to resolve
-    return results;
-  };
 
   const { isLoading: historyLoading, data: historyData } = useQuery(
     "history",

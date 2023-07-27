@@ -2,8 +2,8 @@ import { collection, getDocs, query, doc, getDoc } from "firebase/firestore";
 import { getDownloadURL, ref } from "firebase/storage";
 import { db, storage } from "../firebase/firebaseConfig";
 
-export const fetchHistory = async () => {
-  const snapshot = await getDocs(collection(db, "history"));
+export const fetchData = async (collectionName : string) => {
+  const snapshot = await getDocs(collection(db, collectionName));
   const list = snapshot.docs.map(async (doc) => {
     const data = doc.data();
     const posterUrl = await getDownloadURL(ref(storage, data.posterImage)); // get poster URL
