@@ -6,7 +6,7 @@ import { collection, getDocs, query, doc, getDoc } from "firebase/firestore";
 import { Wrapper } from "../Components/styledComponents";
 import { getMovies, IGetMoviesResult } from "../Hooks/api";
 import { db, storage } from "../firebase/firebaseConfig";
-import Slides from "../Components/Slides";
+import Slides, { IData } from "../Components/Slides";
 import annexeBg from "../assets/annexe-bg.jpg";
 import { devices } from "../Hooks/mediaQuery";
 
@@ -72,8 +72,9 @@ function Home() {
     return results;
   };
 
-  const { isLoading: historyLoading, data: historyData } = useQuery(
+  const { isLoading: historyLoading, data: historyData } = useQuery<IData[]>(
     "history",
+    //@ts-ignore
     fetchHistory
   );
 
@@ -96,7 +97,7 @@ function Home() {
             </Overview>
           </Banner>
 
-          <Slides name="History" data={historyData as any} />
+          <Slides name="History" data={historyData as IData[]} />
 
           {/* <Slides name="Events" data={historyData} />
 

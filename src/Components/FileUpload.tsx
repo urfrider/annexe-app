@@ -45,7 +45,6 @@ const FileUpload: React.FC<IFileUploadProps> = ({
 
     // Wait for all promises to resolve and update the state with the Base64 data
     Promise.all(base64Promises).then((base64Files) => {
-      // console.log(base64Files);
       setBase64((prevFiles: string[]) => [...prevFiles, ...base64Files]);
       // @ts-ignore
       onChange((prevFiles) => [...prevFiles, ...base64Files]);

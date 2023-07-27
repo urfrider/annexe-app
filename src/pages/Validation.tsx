@@ -72,7 +72,7 @@ const DeclineIcon = styled(ClearIcon)`
 `;
 
 const Cell = styled(TableCell)`
-  border-right: 2px dotted #715c7d;
+  border-right: 2px solid #715c7d;
 `;
 
 const Header = styled.h1`

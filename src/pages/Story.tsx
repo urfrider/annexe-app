@@ -11,6 +11,7 @@ import {
 } from "../Components/styledComponents";
 import styled from "styled-components";
 import { useAuth } from "../firebase/firebaseAuth";
+import { User } from "firebase/auth";
 
 const ButtonDiv = styled.div`
   position: absolute;
@@ -47,7 +48,7 @@ function Story() {
   const [description, setDescription] = useState("");
   const [posterImage, setPosterImage] = useState<string[]>([]);
 
-  const user: any = useAuth();
+  const user: User | null = useAuth();
 
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();

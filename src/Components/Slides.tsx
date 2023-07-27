@@ -201,7 +201,7 @@ const detailVars = {
 
 const style = { color: "white", fontSize: "2em" };
 
-interface IData {
+export interface IData {
   id: number;
   title: string;
   description: string;
@@ -261,8 +261,10 @@ const Slides = (props: IProps) => {
 
   const clickedData =
     dataMatch?.params.dataId &&
-    props.data?.find((data: any) => data.id + "" === dataMatch.params.dataId);
+    props.data?.find((data: IData) => data.id + "" === dataMatch.params.dataId);
   console.log(clickedData);
+
+  console.log(props.data);
 
   return (
     <>
