@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
+import { devices } from "../Hooks/mediaQuery";
 
 const Loader = styled.div`
   display: flex;
@@ -25,12 +26,23 @@ const Loader = styled.div`
   height: 100vh;
 `;
 
+const ContainerWrapper = styled(Wrapper)`
+  margin-top: 6rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 6rem;
   flex-direction: column;
+  width: 90%;
+  @media (${devices.smd}) {
+    width: 80%;
+  }
 `;
 
 const TableHeaderCell = styled(TableCell)`
@@ -60,7 +72,7 @@ const DeclineIcon = styled(ClearIcon)`
 `;
 
 const Cell = styled(TableCell)`
-  border-right: 1px solid #715c7d;
+  border-right: 2px dotted #715c7d;
 `;
 
 const Header = styled.h1`
@@ -118,7 +130,7 @@ const Validation = () => {
   };
 
   return (
-    <Wrapper>
+    <ContainerWrapper>
       {storiesLoading ? (
         <Loader>
           <ClipLoader color="lightblue" size={80} />
@@ -157,7 +169,7 @@ const Validation = () => {
                         style={{ width: "100px", height: "auto" }}
                       />
                     </Cell>
-                    <Cell>
+                    <TableCell>
                       <ButtonWrapper>
                         {story.validationStatus === "accepted" ? (
                           <AcceptIcon />
@@ -174,7 +186,7 @@ const Validation = () => {
                           />
                         )}
                       </ButtonWrapper>
-                    </Cell>
+                    </TableCell>
                   </TableRowStyled>
                 ))}
               </TableBody>
@@ -182,7 +194,7 @@ const Validation = () => {
           </TableContainer>
         </Container>
       )}
-    </Wrapper>
+    </ContainerWrapper>
   );
 };
 
