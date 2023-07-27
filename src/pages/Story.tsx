@@ -10,6 +10,7 @@ import {
   Wrapper,
 } from "../Components/styledComponents";
 import styled from "styled-components";
+import { useAuth } from "../firebase/firebaseAuth";
 
 const ButtonDiv = styled.div`
   position: absolute;
@@ -17,7 +18,7 @@ const ButtonDiv = styled.div`
   justify-content: center;
   align-items: center;
   margin-top: 6rem;
-  width: 100%; 
+  width: 100%;
 `;
 
 const Button = styled.button`
@@ -46,6 +47,8 @@ function Story() {
   const [description, setDescription] = useState("");
   const [posterImage, setPosterImage] = useState("");
 
+  const user: any = useAuth();
+
   const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const data = {
@@ -58,11 +61,14 @@ function Story() {
 
   return (
     <Wrapper>
-      <ButtonDiv>
-      <Link to="/validation">
-      <Button >Click here to validate stories</Button>
-      </Link>
-      </ButtonDiv>
+      {user && (
+        <ButtonDiv>
+          <Link to="/validation">
+            <Button>Click here to validate stories</Button>
+          </Link>
+        </ButtonDiv>
+      )}
+
       <FormContainer onSubmit={onSubmit}>
         <FormTitle>Add your story</FormTitle>
         <Input
