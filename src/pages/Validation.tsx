@@ -34,8 +34,10 @@ const Container = styled.div`
 `;
 
 const TableHeaderCell = styled(TableCell)`
-  background-color: #f0f0f0;
+  font-size: 2rem;
+  background-color: #715c7d;
   font-weight: bold;
+  color: white;
 `;
 
 const TableRowStyled = styled(TableRow)`
@@ -43,13 +45,36 @@ const TableRowStyled = styled(TableRow)`
 `;
 
 const AcceptIcon = styled(CheckIcon)`
-  color: #4caf50;
+  margin-right: 10px;
+  color: white;
+  background-color: green;
+  border-radius: 50%;
   cursor: pointer;
 `;
 
 const DeclineIcon = styled(ClearIcon)`
-  color: #f44336;
+  color: white;
+  background-color: red;
+  border-radius: 50%;
   cursor: pointer;
+`;
+
+const Cell = styled(TableCell)`
+  border-right: 1px solid #715c7d;
+`;
+
+const Header = styled.h1`
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+`;
+
+const ButtonWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Validation = () => {
@@ -94,59 +119,69 @@ const Validation = () => {
 
   return (
     <Wrapper>
-      <Container>
-        {storiesLoading ? (
-          <Loader>
-            <ClipLoader color="lightblue" size={80} />
-          </Loader>
-        ) : (
+      {storiesLoading ? (
+        <Loader>
+          <ClipLoader color="lightblue" size={80} />
+        </Loader>
+      ) : (
+        <Container>
           <TableContainer component={Paper}>
             <Table size="small">
               <TableHead>
                 <TableRowStyled>
-                  <TableHeaderCell>ID</TableHeaderCell>
-                  <TableHeaderCell>Title</TableHeaderCell>
-                  <TableHeaderCell>Description</TableHeaderCell>
-                  <TableHeaderCell>Poster</TableHeaderCell>
-                  <TableHeaderCell>Validation Status</TableHeaderCell>
+                  {/* <TableHeaderCell>ID</TableHeaderCell> */}
+                  <TableHeaderCell>
+                    <Header>Title</Header>
+                  </TableHeaderCell>
+                  <TableHeaderCell>
+                    <Header>Description</Header>
+                  </TableHeaderCell>
+                  <TableHeaderCell>
+                    <Header>Poster</Header>
+                  </TableHeaderCell>
+                  <TableHeaderCell>
+                    <Header>Validation Status</Header>
+                  </TableHeaderCell>
                 </TableRowStyled>
               </TableHead>
               <TableBody>
                 {storiesData?.map((story: any) => (
                   <TableRowStyled key={story.id}>
-                    <TableCell>{story.id}</TableCell>
-                    <TableCell>{story.title}</TableCell>
-                    <TableCell>{story.description}</TableCell>
-                    <TableCell>
+                    {/* <TableCell>{story.id}</TableCell> */}
+                    <Cell>{story.title}</Cell>
+                    <Cell>{story.description}</Cell>
+                    <Cell>
                       <img
                         src={story.posterUrl}
                         alt={story.title}
                         style={{ width: "100px", height: "auto" }}
                       />
-                    </TableCell>
-                    <TableCell>
-                      {story.validationStatus === "accepted" ? (
-                        <AcceptIcon />
-                      ) : (
-                        <AcceptIcon
-                          onClick={() => handleAcceptStory(story.id)}
-                        />
-                      )}
-                      {story.validationStatus === "declined" ? (
-                        <DeclineIcon />
-                      ) : (
-                        <DeclineIcon
-                          onClick={() => handleDeclineStory(story.id)}
-                        />
-                      )}
-                    </TableCell>
+                    </Cell>
+                    <Cell>
+                      <ButtonWrapper>
+                        {story.validationStatus === "accepted" ? (
+                          <AcceptIcon />
+                        ) : (
+                          <AcceptIcon
+                            onClick={() => handleAcceptStory(story.id)}
+                          />
+                        )}
+                        {story.validationStatus === "declined" ? (
+                          <DeclineIcon />
+                        ) : (
+                          <DeclineIcon
+                            onClick={() => handleDeclineStory(story.id)}
+                          />
+                        )}
+                      </ButtonWrapper>
+                    </Cell>
                   </TableRowStyled>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
-        )}
-      </Container>
+        </Container>
+      )}
     </Wrapper>
   );
 };

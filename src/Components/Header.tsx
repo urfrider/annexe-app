@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 import { auth } from "../firebase/firebaseConfig";
 import { devices } from "../Hooks/mediaQuery";
 
-const Nav = styled(motion.nav)`
+const Nav = styled(motion.nav)<{ variants: any }>`
   display: flex;
   justify-content: space-between;
   align-items: center;

@@ -82,6 +82,7 @@ const WorkDetail = styled(motion.div)`
   width: 70vw;
   height: 80vh;
   overflow-y: scroll;
+  top: 70px;
   left: 0;
   right: 0;
   margin: 0 auto;
@@ -256,9 +257,6 @@ const Slides = (props: IProps) => {
 
   const overlayOnClick = () => {
     navigate(-1);
-
-    // prevent double clicks
-    setTimeout(() => {}, 1000);
   };
 
   const clickedData =
@@ -320,10 +318,7 @@ const Slides = (props: IProps) => {
               exit={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             />
-            <WorkDetail
-              style={{ top: 50 }}
-              layoutId={dataMatch.params.dataId + ""}
-            >
+            <WorkDetail layoutId={dataMatch.params.dataId + ""}>
               {clickedData && (
                 <>
                   <WorkCover
