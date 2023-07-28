@@ -6,7 +6,7 @@ export const fetchData = async (collectionName : string) => {
   const snapshot = await getDocs(collection(db, collectionName));
   const list = snapshot.docs.map(async (doc) => {
     const data = doc.data();
-    const posterUrl = await getDownloadURL(ref(storage, data.posterImage)); // get poster URL
+    const posterUrl = await getDownloadURL(ref(storage, data.posterImage[0])); // get poster URL
     return {
       id: doc.id,
       ...data,

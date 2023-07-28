@@ -71,10 +71,9 @@ function Event() {
       title: title,
       organisation: organisation,
       description: description,
-      posterImage: `/${type}/${organisation}.png`,
+      posterImage: [],
     };
-    console.log(data);
-    uploadImage(posterImage, type, organisation);
+    uploadImage(posterImage, type, organisation,data);
     await insertDb(data, type);
     toast.success("Added successfully");
   };
@@ -99,7 +98,7 @@ function Event() {
           onChange={(e) => setTitle(e.target.value)}
         />
         <Input
-          placeholder="Organization"
+          placeholder="Organisation"
           required
           onChange={(e) => setOrganisation(e.target.value)}
         />

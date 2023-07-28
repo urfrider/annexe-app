@@ -12,6 +12,9 @@ import {
 import styled from "styled-components";
 import { useAuth } from "../firebase/firebaseAuth";
 import { User } from "firebase/auth";
+import { toast } from "react-hot-toast";
+
+import { uploadImage } from "../firebase/functions";
 
 const ButtonDiv = styled.div`
   position: absolute;
@@ -45,19 +48,22 @@ const Button = styled.button`
 
 function Story() {
   const [title, setTitle] = useState("");
+  const [organisation, setOrganisation] = useState("");
   const [description, setDescription] = useState("");
   const [posterImage, setPosterImage] = useState<string[]>([]);
 
   const user: User | null = useAuth();
 
-  const onSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     const data = {
       title: title,
+      organisation: organisation,
       description: description,
-      posterImage: posterImage,
+      posterImage: [],
     };
-    console.log(data);
+    uploadImage(posterImage, "stories", organisation, data);
+    toast.success("Added successfully");
   };
 
   return (
@@ -76,6 +82,11 @@ function Story() {
           required={true}
           placeholder="Title"
           onChange={(e) => setTitle(e.target.value)}
+        />
+        <Input
+          placeholder="Organisation"
+          required
+          onChange={(e) => setOrganisation(e.target.value)}
         />
         <Textarea
           placeholder="Description"
