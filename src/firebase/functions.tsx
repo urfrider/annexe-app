@@ -2,7 +2,14 @@ import { db, storage } from "./firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
-export const insertDb = async (data: any, collectionName: string) => {
+interface Idata {
+  title: string;
+  organisation: string;
+  description: string;
+  posterImage: string[];
+}
+
+export const insertDb = async (data: Idata, collectionName: string) => {
   try {
     const docRef = await addDoc(collection(db, collectionName), data);
     console.log("Document written with ID: ", docRef.id);
@@ -12,13 +19,13 @@ export const insertDb = async (data: any, collectionName: string) => {
 };
 
 export const uploadImage = async (
-  posterImage: any,
+  posterImage: string[],
   collectionName: string,
-  organisation: any,
-  data: any
+  organisation: string,
+  data: Idata
 ) => {
   // Convert the base64 string to binary data (Uint8Array)
-  posterImage.forEach ((image: string) => {
+  posterImage.forEach((image: string) => {
     const binaryData = atob(image.split(",")[1]);
     const length = binaryData.length;
     const uint8Array = new Uint8Array(length);
@@ -28,18 +35,18 @@ export const uploadImage = async (
     var metadata;
     var fileExtension;
 
-    if(image.includes("mp4")){
-       metadata = {
+    if (image.includes("mp4")) {
+      metadata = {
         contentType: "video/mp4",
       };
       fileExtension = "mp4";
-    }else if (image.includes("png")) {
-       metadata = {
+    } else if (image.includes("png")) {
+      metadata = {
         contentType: "image/png",
       };
       fileExtension = "png";
-    }else {
-       metadata = {
+    } else {
+      metadata = {
         contentType: "image/jpg",
       };
       fileExtension = "jpg";
@@ -47,12 +54,12 @@ export const uploadImage = async (
 
     const randomNumber = Math.floor(Math.random() * 10000) + 1;
     const fileName = `${organisation}_${randomNumber}.${fileExtension}`;
-    
+
     const storageRef = ref(storage, `/${collectionName}/${fileName}`);
     const uploadTask = uploadBytesResumable(storageRef, uint8Array, metadata);
 
     data.posterImage.push(`/${collectionName}/${fileName}`); //to add to posterImage array
-  
+
     uploadTask.on(
       "state_changed",
       (snapshot) => {
@@ -68,7 +75,7 @@ export const uploadImage = async (
         });
       }
     );
-  })
+  });
 
   await insertDb(data, collectionName);
 };

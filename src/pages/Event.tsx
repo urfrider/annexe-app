@@ -11,8 +11,7 @@ import {
 import styled from "styled-components";
 import { toast } from "react-hot-toast";
 import { devices } from "../Hooks/mediaQuery";
-
-import { insertDb, uploadImage } from "../firebase/functions";
+import { uploadImage } from "../firebase/functions";
 
 const ToggleButton = styled.div<{ isEvent: boolean }>`
   display: flex;
@@ -73,8 +72,7 @@ function Event() {
       description: description,
       posterImage: [],
     };
-    uploadImage(posterImage, type, organisation,data);
-    await insertDb(data, type);
+    uploadImage(posterImage, type, organisation, data);
     toast.success("Added successfully");
   };
 

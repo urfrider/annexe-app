@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQueries, useQuery } from "react-query";
 import styled from "styled-components";
 import { ClipLoader } from "react-spinners";
 import { Wrapper } from "../Components/styledComponents";
@@ -9,6 +9,7 @@ import { fetchData } from "../Hooks/api";
 
 const Loader = styled.div`
   display: flex;
+  /* position: fixed; */
   justify-content: center;
   align-items: center;
   height: 100vh;
@@ -49,27 +50,30 @@ const Overview = styled.p`
 `;
 
 function Home() {
+  const queries = useQueries([
+    {
+      queryKey: "history",
+      queryFn: () => fetchData("history"),
+    },
+    {
+      queryKey: "stories",
+      queryFn: () => fetchData("stories"),
+    },
+    {
+      queryKey: "events",
+      queryFn: () => fetchData("events"),
+    },
+  ]);
 
+  const isLoading = queries.some((query) => query.isLoading);
+  const data = queries.map((query) => query.data);
 
-  const { isLoading: historyLoading, data: historyData } = useQuery(
-    "history",
-    async () => fetchData("history")
-  );
-
-  const { isLoading: storiesLoading, data: storiesData } = useQuery(
-    "stories",
-    async () => fetchData("stories")
-  );
-
-  const { isLoading: eventsLoading, data: eventsData } = useQuery(
-    "events",
-    async () => fetchData("events")
-  );
-
+  const [historyData, storiesData, eventsData] = data;
+  // console.log(eventsData);
 
   return (
     <Wrapper>
-      {(historyLoading&&storiesLoading&&eventsLoading) ? (
+      {isLoading ? (
         <Loader>
           <ClipLoader color="lightblue" size={80} />
         </Loader>
@@ -84,15 +88,9 @@ function Home() {
             </Overview>
           </Banner>
 
-          
-
-          <Slides name="Events" data={eventsData as any} />
-
-          <Slides name="Stories" data={storiesData as any} />
-
-          <Slides name="History" data={historyData as any} />
-
-          
+          {eventsData && <Slides name="Events" data={eventsData} />}
+          {storiesData && <Slides name="Stories" data={storiesData} />}
+          {historyData && <Slides name="History" data={historyData} />}
         </>
       )}
     </Wrapper>

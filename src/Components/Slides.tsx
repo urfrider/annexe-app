@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { BiLeftArrow, BiRightArrow } from "react-icons/bi";
-import { useMatch, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { devices } from "../Hooks/mediaQuery";
 import { BsFillMicFill } from "react-icons/bs";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "../firebase/firebaseConfig";
 
 const Detail = styled(motion.div)`
   padding: 10px;
@@ -115,6 +117,14 @@ const WorkCover = styled.img`
   height: 18rem;
 `;
 
+const WorkRow = styled(motion.div)`
+  width: 100%;
+  position: absolute;
+  background-size: cover;
+  background-position: center center;
+  height: 18rem;
+`;
+
 const WorkTitle = styled.h2`
   color: ${(props) => props.theme.white.lighter};
   padding: 20px;
@@ -207,7 +217,7 @@ export interface IData {
   title: string;
   description: string;
   organisation: string;
-  posterImage: string;
+  posterImage: string[];
   posterUrl: string;
 }
 
@@ -219,13 +229,52 @@ interface IProps {
 const Slides = (props: IProps) => {
   const [direction, setDirection] = useState(0);
   const [index, setIndex] = useState(0);
+  const [workIndex, setWorkIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
-  const [clickedData, setClickedData] = useState<any>({});
+  const [workLeaving, setWorkLeaving] = useState(false);
+
+  const [clickedData, setClickedData] = useState<IData>({
+    id: 0,
+    title: "",
+    description: "",
+    organisation: "",
+    posterImage: [],
+    posterUrl: "",
+  });
   const offset = 3;
+  const workCoverOffset = 1;
+  const [imageUrl, setImageUrl] = useState<any>();
+  async function fetchImage() {
+    setImageUrl([]);
+    clickedData?.posterImage.map(async (img) => {
+      const url = await getImageUrl(img); // Assuming data is the prop passed to your component containing the image data
+      setImageUrl((prev: any) => [...prev, url]);
+    });
+  }
+
+  // Fetch the image URL when the component mounts or when the data changes
+  useEffect(() => {
+    fetchImage();
+  }, [clickedData]); // Make sure to include data in the dependency array if it can change
+
+  // console.log(imageUrl);
   const navigate = useNavigate();
   const onClick = () => console.log("CLICKEND");
 
   const toggleLeaving = () => setLeaving((prev) => !prev);
+  const toggleWorkLeaving = () => setWorkLeaving((prev) => !prev);
+
+  async function getImageUrl(imagePath: string): Promise<string> {
+    try {
+      const imageRef = ref(storage, imagePath);
+      const downloadURL = await getDownloadURL(imageRef);
+      return downloadURL;
+    } catch (error) {
+      // Handle any errors that may occur during the process
+      console.error("Error getting image URL:", error);
+      return ""; // Return a default or placeholder URL in case of an error
+    }
+  }
 
   const increaseIndex = () => {
     setDirection(1);
@@ -249,13 +298,46 @@ const Slides = (props: IProps) => {
     }
   };
 
+  const workCoverIncreaseIndex = async (images: any) => {
+    setDirection(1);
+
+    if (workLeaving) return;
+    toggleWorkLeaving();
+    const totalImages = images.length;
+    const totalIndex = Math.ceil(totalImages / workCoverOffset) - 1;
+    setWorkIndex((prev) => (prev === totalIndex ? 0 : prev + 1));
+  };
+
+  const workCoverDecreaseIndex = (images: any) => {
+    setDirection(-1);
+
+    if (leaving) return;
+    toggleLeaving();
+    const totalImages = images.length;
+    const totalIndex = Math.ceil(totalImages / workCoverOffset) - 1;
+    setWorkIndex((prev) => (prev === 0 ? totalIndex : prev - 1));
+  };
+
   const onBoxClick = async (dataId: number) => {
-    setClickedData(props.data.find((data: any) => data.id === dataId));
+    const foundData: IData | undefined = props.data.find(
+      (data: IData) => data.id === dataId
+    );
+    if (foundData) {
+      setClickedData(foundData);
+      console.log(foundData);
+    }
     navigate(`data/${dataId}`);
   };
 
   const overlayOnClick = () => {
-    setClickedData(() => ({}));
+    setClickedData(() => ({
+      id: 0,
+      title: "",
+      description: "",
+      organisation: "",
+      posterImage: [],
+      posterUrl: "",
+    }));
     navigate(-1);
   };
 
@@ -306,7 +388,7 @@ const Slides = (props: IProps) => {
       </SliderWrapper>
 
       <AnimatePresence>
-        {clickedData.id && (
+        {clickedData?.id !== 0 && (
           <>
             <Overlay
               onClick={overlayOnClick}
@@ -316,12 +398,44 @@ const Slides = (props: IProps) => {
             <WorkDetail layoutId={clickedData.id + ""}>
               {clickedData.id && (
                 <>
-                  <WorkCover
+                  <AnimatePresence
+                    initial={false}
+                    onExitComplete={toggleWorkLeaving}
+                    custom={direction}
+                  >
+                    <WorkRow
+                      variants={vars}
+                      custom={direction}
+                      animate="visible"
+                      initial="hidden"
+                      exit="exit"
+                      key={workIndex}
+                      transition={{ type: "tween", duration: 1 }}
+                    >
+                      {clickedData.posterImage
+                        ?.slice(
+                          workIndex * workCoverOffset,
+                          workIndex * workCoverOffset + workCoverOffset
+                        )
+                        .map((data: any) => (
+                          <WorkCover
+                            onClick={() =>
+                              workCoverIncreaseIndex(clickedData.posterImage)
+                            }
+                            src={imageUrl[workIndex]}
+                            style={{
+                              backgroundImage: `linear-gradient(to top, black, transparent)`,
+                            }}
+                          />
+                        ))}
+                    </WorkRow>
+                  </AnimatePresence>
+                  {/* <WorkCover
                     src={clickedData.posterUrl}
                     style={{
                       backgroundImage: `linear-gradient(to top, black, transparent)`,
                     }}
-                  />
+                  /> */}
                   <MicLogo onClick={onClick}>
                     <BsFillMicFill style={{ cursor: "pointer" }} />
                   </MicLogo>
