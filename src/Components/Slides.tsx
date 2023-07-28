@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { BiLeftArrow, BiRightArrow } from "react-icons/bi";
 import { useMatch, useNavigate } from "react-router-dom";
@@ -89,6 +89,7 @@ const WorkDetail = styled(motion.div)`
   border-radius: 10px;
   overflow: auto;
   background-color: #3d3d3d;
+  z-index: 1;
   ::-webkit-scrollbar {
     width: 8px; /* width of the entire scrollbar */
   }
@@ -219,11 +220,9 @@ const Slides = (props: IProps) => {
   const [direction, setDirection] = useState(0);
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
+  const [clickedData, setClickedData] = useState<any>({});
   const offset = 3;
   const navigate = useNavigate();
-  const dataMatch = useMatch("/data/:dataId");
-  console.log(dataMatch);
-
   const onClick = () => console.log("CLICKEND");
 
   const toggleLeaving = () => setLeaving((prev) => !prev);
@@ -251,21 +250,14 @@ const Slides = (props: IProps) => {
   };
 
   const onBoxClick = async (dataId: number) => {
+    setClickedData(props.data.find((data: any) => data.id === dataId));
     navigate(`data/${dataId}`);
   };
 
   const overlayOnClick = () => {
+    setClickedData(() => ({}));
     navigate(-1);
   };
-
-  const clickedData =
-    dataMatch?.params.dataId &&
-    props.data?.find((data: any) => data.id + "" === dataMatch.params.dataId);
-  console.log(dataMatch)
-  console.log(props.data)
-  console.log(clickedData);
-
-  console.log(props.data);
 
   return (
     <>
@@ -314,15 +306,15 @@ const Slides = (props: IProps) => {
       </SliderWrapper>
 
       <AnimatePresence>
-        {dataMatch && (
+        {clickedData.id && (
           <>
             <Overlay
               onClick={overlayOnClick}
               exit={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             />
-            <WorkDetail layoutId={dataMatch.params.dataId + ""}>
-              {clickedData && (
+            <WorkDetail layoutId={clickedData.id + ""}>
+              {clickedData.id && (
                 <>
                   <WorkCover
                     src={clickedData.posterUrl}
