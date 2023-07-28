@@ -23,6 +23,10 @@ export const fetchData = async (collectionName: string) => {
       posterUrl,
     };
   });
-  const results = await Promise.all(list); // wait for all the URLs to resolve
+  let results = await Promise.all(list); // wait for all the URLs to resolve
+
+  if (collectionName === "stories") {
+    results = results.filter((story: any) => story.validated === true);
+  }
   return results as unknown as IData[];
 };

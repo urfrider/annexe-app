@@ -1,5 +1,5 @@
 import { db, storage } from "./firebaseConfig";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc,doc, updateDoc,deleteDoc  } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 interface Idata {
@@ -15,6 +15,26 @@ export const insertDb = async (data: Idata, collectionName: string) => {
     console.log("Document written with ID: ", docRef.id);
   } catch (e) {
     console.error("Error adding document: ", e);
+  }
+};
+
+export const updateDb = async (collectionName: string, docId: string, updatedData: any) => {
+  try {
+    const docRef = doc(db, collectionName, docId);
+    await updateDoc(docRef, updatedData);
+    console.log("Document updated successfully!");
+  } catch (e) {
+    console.error("Error updating document: ", e);
+  }
+};
+
+export const deleteDb = async (collectionName: string, docId: string) => {
+  try {
+    const docRef = doc(db, collectionName, docId);
+    await deleteDoc(docRef);
+    console.log("Document deleted successfully!");
+  } catch (e) {
+    console.error("Error deleting document: ", e);
   }
 };
 

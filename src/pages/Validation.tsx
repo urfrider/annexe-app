@@ -18,6 +18,7 @@ import {
 import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
 import { devices } from "../Hooks/mediaQuery";
+import { updateDb, deleteDb } from "../firebase/functions";
 
 const Loader = styled.div`
   display: flex;
@@ -96,49 +97,50 @@ export interface IStory {
   organisation: string;
   posterImage: string;
   posterUrl: string;
-  validationStatus: string;
+  validated: boolean;
 }
 
 const Validation = () => {
   const [storiesData, setStoriesData] = useState<IStory[]>([]); // State to hold stories data
 
   const fetchStories = async () => {
-    const snapshot = await getDocs(collection(db, "history"));
+    const snapshot = await getDocs(collection(db, "stories"));
     const list = snapshot.docs.map(async (doc) => {
       const data = doc.data();
-      const posterUrl = await getDownloadURL(ref(storage, data.posterImage)); // get poster URL
+      const posterUrl = await getDownloadURL(ref(storage, data.posterImage[0])); // get poster URL
       return {
         id: doc.id,
         ...data,
         posterUrl,
-        validationStatus: "", // for testing
       };
     });
-    const results = await Promise.all(list); // wait for all the URLs to resolve
-
+    let results = await Promise.all(list); // wait for all the URLs to resolve
+    results = results.filter((story: any) => story.validated === false);
     //@ts-ignore
     setStoriesData(results); // Save data in state
   };
 
   const { isLoading: storiesLoading } = useQuery("stories", fetchStories);
 
-  // Function to handle validation status change
-  const handleValidationChange = (id: number, status: string) => {
-    setStoriesData((prevData) =>
-      prevData.map((story: IStory) =>
-        story.id === id ? { ...story, validationStatus: status } : story
-      )
-    );
+  const handleAcceptStory = async (id: any) => {
+    const userConfirmed = window.confirm("Are you sure you want to accept this story?");
+
+    if (userConfirmed) {
+      const updatedData = {
+        validated: true,
+      };
+      await updateDb("stories", id, updatedData);
+      setStoriesData((prevStories) => prevStories.filter((story) => story.id !== id));
+    }
   };
 
-  // Function to accept the story
-  const handleAcceptStory = (id: number) => {
-    handleValidationChange(id, "accepted");
-  };
+  const handleDeclineStory = async (id: any) => {
+    const userConfirmed = window.confirm("Are you sure you want to decline this story?");
 
-  // Function to decline the story
-  const handleDeclineStory = (id: number) => {
-    handleValidationChange(id, "declined");
+    if (userConfirmed) {
+      await deleteDb("stories", id);
+      setStoriesData((prevStories) => prevStories.filter((story) => story.id !== id));
+    }
   };
 
   return (
@@ -153,7 +155,6 @@ const Validation = () => {
             <Table size="small">
               <TableHead>
                 <TableRowStyled>
-                  {/* <TableHeaderCell>ID</TableHeaderCell> */}
                   <TableHeaderCell>
                     <Header>Title</Header>
                   </TableHeaderCell>
@@ -171,7 +172,6 @@ const Validation = () => {
               <TableBody>
                 {storiesData?.map((story: IStory) => (
                   <TableRowStyled key={story.id}>
-                    {/* <TableCell>{story.id}</TableCell> */}
                     <Cell>{story.title}</Cell>
                     <Cell>{story.description}</Cell>
                     <Cell>
@@ -183,20 +183,13 @@ const Validation = () => {
                     </Cell>
                     <TableCell>
                       <ButtonWrapper>
-                        {story.validationStatus === "accepted" ? (
-                          <AcceptIcon />
-                        ) : (
-                          <AcceptIcon
-                            onClick={() => handleAcceptStory(story.id)}
-                          />
-                        )}
-                        {story.validationStatus === "declined" ? (
-                          <DeclineIcon />
-                        ) : (
-                          <DeclineIcon
-                            onClick={() => handleDeclineStory(story.id)}
-                          />
-                        )}
+                        <AcceptIcon
+                          onClick={() => handleAcceptStory(story.id)}
+                        />
+
+                        <DeclineIcon
+                          onClick={() => handleDeclineStory(story.id)}
+                        />
                       </ButtonWrapper>
                     </TableCell>
                   </TableRowStyled>

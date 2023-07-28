@@ -61,7 +61,9 @@ function Story() {
       organisation: organisation,
       description: description,
       posterImage: [],
+      validated: false
     };
+    user ? data.validated = true : data.validated = false
     uploadImage(posterImage, "stories", organisation, data);
     toast.success("Added successfully");
   };
