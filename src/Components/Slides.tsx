@@ -4,10 +4,15 @@ import { BiLeftArrow, BiRightArrow } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { devices } from "../Hooks/mediaQuery";
-import { BsFillMicFill } from "react-icons/bs";
+import { BsStopCircle } from "react-icons/bs";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../firebase/firebaseConfig";
-import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+import {
+  AiOutlineLeft,
+  AiOutlineRight,
+  AiOutlinePlayCircle,
+  AiOutlinePauseCircle,
+} from "react-icons/ai";
 
 const Detail = styled(motion.div)`
   padding: 10px;
@@ -29,12 +34,12 @@ const Slider = styled.div`
   margin: 5px;
 `;
 
-const SliderWrapper = styled.div`
+const SliderWrapper = styled.div<{ marginBottom: number }>`
   display: flex;
   position: relative;
   align-items: center;
   justify-content: center;
-  margin-bottom: 350px;
+  margin-bottom: ${(props) => (props.marginBottom ? "50px" : "350px")};
 `;
 
 const HeaderTitle = styled.h1`
@@ -74,8 +79,9 @@ const Overlay = styled(motion.div)`
   position: fixed;
   top: 0;
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
   opacity: 0;
 `;
 
@@ -138,7 +144,7 @@ const WorkTitle = styled.h2`
   padding: 20px;
   font-size: 1.5rem;
   position: relative;
-  top: -5rem;
+  top: -4rem;
   color: #fffa65;
   @media (${devices.sm}) {
     font-size: 1.8rem;
@@ -152,7 +158,7 @@ const WorkOverview = styled.p`
   padding: 20px;
   width: 95%;
   position: relative;
-  top: -5rem;
+  top: -3rem;
   color: ${(props) => props.theme.white.lighter};
 
   @media (${devices.md}) {
@@ -166,11 +172,9 @@ const MicLogo = styled.div`
   right: 0.5rem;
   display: flex;
   cursor: pointer;
-  border: 1px solid white;
   justify-content: flex-end;
-  width: min-content;
-  border-radius: 50%;
-  padding: 5px;
+  align-items: center;
+  gap: 5px;
 `;
 
 const VideoCover = styled.video`
@@ -244,11 +248,18 @@ const detailVars = {
 
 const style = { color: "white", fontSize: "2em", cursor: "pointer" };
 
+const playStyle = {
+  cursor: "pointer",
+  fontSize: "1.5rem",
+  marginTop: 10,
+  color: "white",
+};
+
 const workStyle = {
   cursor: "pointer",
   zIndex: 10,
   color: "white",
-  fontSize: "1.5em",
+  fontSize: "1.5rem",
   margin: 10,
 };
 
@@ -264,6 +275,7 @@ export interface IData {
 interface IProps {
   data: IData[];
   name: string;
+  marginBottom?: number;
 }
 
 const Slides = (props: IProps) => {
@@ -272,6 +284,10 @@ const Slides = (props: IProps) => {
   const [workIndex, setWorkIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const [workLeaving, setWorkLeaving] = useState(false);
+  const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(
+    null
+  );
+  const [isPaused, setIsPaused] = useState(false);
 
   const [clickedData, setClickedData] = useState<IData>({
     id: 0,
@@ -284,21 +300,55 @@ const Slides = (props: IProps) => {
   const offset = 3;
   const workCoverOffset = 1;
   const [imageUrl, setImageUrl] = useState<any>();
-  async function fetchImage() {
+  async function fetchMedia() {
     setImageUrl([]);
     clickedData?.posterImage.map(async (img) => {
-      const url = await getImageUrl(img); // Assuming data is the prop passed to your component containing the image data
+      const url = await getImageUrl(img);
       setImageUrl((prev: any) => [...prev, url]);
     });
   }
 
-  // Fetch the image URL when the component mounts or when the data changes
+  // Fetch the image URL and text-to-speech when the component mounts or when the clcikedData changes
   useEffect(() => {
-    fetchImage();
-  }, [clickedData]); // Make sure to include data in the dependency array if it can change
+    fetchMedia();
+
+    const synth = window.speechSynthesis;
+    const u = new SpeechSynthesisUtterance(clickedData.description);
+    setUtterance(u);
+
+    return () => {
+      synth.cancel();
+    };
+  }, [clickedData]);
 
   const navigate = useNavigate();
-  const onClick = () => console.log("CLICKEND");
+  const handlePlay = () => {
+    const synth = window.speechSynthesis;
+
+    if (isPaused) {
+      synth.resume();
+    }
+
+    synth.speak(utterance as SpeechSynthesisUtterance);
+
+    setIsPaused(false);
+  };
+
+  const handlePause = () => {
+    const synth = window.speechSynthesis;
+
+    synth.pause();
+
+    setIsPaused(true);
+  };
+
+  const handleStop = () => {
+    const synth = window.speechSynthesis;
+
+    synth.cancel();
+
+    setIsPaused(false);
+  };
 
   const toggleLeaving = () => setLeaving((prev) => !prev);
   const toggleWorkLeaving = () => setWorkLeaving((prev) => !prev);
@@ -381,7 +431,7 @@ const Slides = (props: IProps) => {
 
   return (
     <>
-      <SliderWrapper>
+      <SliderWrapper marginBottom={props.marginBottom as number}>
         <HeaderTitle>{props.name}</HeaderTitle>
         <BiLeftArrow style={style} onClick={decreaseIndex} />
         <Slider>
@@ -501,10 +551,21 @@ const Slides = (props: IProps) => {
                       />
                     )}
                   </WorkRowWrapper>
-                  <MicLogo onClick={onClick}>
-                    <BsFillMicFill style={{ cursor: "pointer" }} />
-                  </MicLogo>
-                  <WorkTitle>{clickedData.title}</WorkTitle>
+
+                  <WorkTitle>
+                    {clickedData.title}{" "}
+                    <MicLogo>
+                      <AiOutlinePlayCircle
+                        onClick={handlePlay}
+                        style={playStyle}
+                      />
+                      <AiOutlinePauseCircle
+                        onClick={handlePause}
+                        style={playStyle}
+                      />
+                      <BsStopCircle onClick={handleStop} style={playStyle} />
+                    </MicLogo>
+                  </WorkTitle>
                   <WorkOverview>{clickedData.description}</WorkOverview>
                 </>
               )}

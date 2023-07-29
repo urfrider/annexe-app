@@ -90,7 +90,9 @@ function Home() {
 
           {eventsData && <Slides name="Events" data={eventsData} />}
           {storiesData && <Slides name="Stories" data={storiesData} />}
-          {historyData && <Slides name="History" data={historyData} />}
+          {historyData && (
+            <Slides marginBottom={50} name="History" data={historyData} />
+          )}
         </>
       )}
     </Wrapper>
