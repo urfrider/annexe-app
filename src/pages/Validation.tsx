@@ -91,7 +91,7 @@ const ButtonWrapper = styled.div`
 `;
 
 export interface IStory {
-  id: number;
+  id: string;
   title: string;
   description: string;
   organisation: string;
@@ -114,32 +114,40 @@ const Validation = () => {
         posterUrl,
       };
     });
-    let results = await Promise.all(list); // wait for all the URLs to resolve
-    results = results.filter((story: any) => story.validated === false);
+    let results: IStory[] = (await Promise.all(list)) as unknown as IStory[]; // wait for all the URLs to resolve
+    results = results.filter((story: IStory) => story.validated === false);
     //@ts-ignore
     setStoriesData(results); // Save data in state
   };
 
   const { isLoading: storiesLoading } = useQuery("stories", fetchStories);
 
-  const handleAcceptStory = async (id: any) => {
-    const userConfirmed = window.confirm("Are you sure you want to accept this story?");
+  const handleAcceptStory = async (id: string) => {
+    const userConfirmed = window.confirm(
+      "Are you sure you want to accept this story?"
+    );
 
     if (userConfirmed) {
       const updatedData = {
         validated: true,
       };
       await updateDb("stories", id, updatedData);
-      setStoriesData((prevStories) => prevStories.filter((story) => story.id !== id));
+      setStoriesData((prevStories) =>
+        prevStories.filter((story) => story.id !== id)
+      );
     }
   };
 
-  const handleDeclineStory = async (id: any) => {
-    const userConfirmed = window.confirm("Are you sure you want to decline this story?");
+  const handleDeclineStory = async (id: string) => {
+    const userConfirmed = window.confirm(
+      "Are you sure you want to decline this story?"
+    );
 
     if (userConfirmed) {
       await deleteDb("stories", id);
-      setStoriesData((prevStories) => prevStories.filter((story) => story.id !== id));
+      setStoriesData((prevStories) =>
+        prevStories.filter((story) => story.id !== id)
+      );
     }
   };
 

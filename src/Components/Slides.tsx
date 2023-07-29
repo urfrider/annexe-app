@@ -7,6 +7,7 @@ import { devices } from "../Hooks/mediaQuery";
 import { BsFillMicFill } from "react-icons/bs";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../firebase/firebaseConfig";
+import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
 
 const Detail = styled(motion.div)`
   padding: 10px;
@@ -92,6 +93,7 @@ const WorkDetail = styled(motion.div)`
   overflow: auto;
   background-color: #3d3d3d;
   z-index: 1;
+  overflow-x: hidden;
   ::-webkit-scrollbar {
     width: 8px; /* width of the entire scrollbar */
   }
@@ -117,12 +119,18 @@ const WorkCover = styled.img`
   height: 18rem;
 `;
 
+const WorkRowWrapper = styled.div`
+  height: 18rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+`;
+
 const WorkRow = styled(motion.div)`
   width: 100%;
   position: absolute;
-  background-size: cover;
-  background-position: center center;
-  height: 18rem;
 `;
 
 const WorkTitle = styled.h2`
@@ -165,6 +173,11 @@ const MicLogo = styled.div`
   padding: 5px;
 `;
 
+const VideoCover = styled.video`
+  width: 100%;
+  height: 18rem;
+`;
+
 const boxVars = {
   normal: {
     scale: 1,
@@ -199,6 +212,25 @@ const vars = {
   },
 };
 
+const workVars = {
+  hidden: (direction: number) => {
+    return {
+      x: direction > 0 ? 300 : -300,
+      opacity: 0,
+    };
+  },
+  visible: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: number) => {
+    return {
+      x: direction > 0 ? -300 : 300,
+      opacity: 0,
+    };
+  },
+};
+
 const detailVars = {
   hover: {
     opacity: 1,
@@ -210,7 +242,15 @@ const detailVars = {
   },
 };
 
-const style = { color: "white", fontSize: "2em" };
+const style = { color: "white", fontSize: "2em", cursor: "pointer" };
+
+const workStyle = {
+  cursor: "pointer",
+  zIndex: 10,
+  color: "white",
+  fontSize: "1.5em",
+  margin: 10,
+};
 
 export interface IData {
   id: number;
@@ -257,7 +297,6 @@ const Slides = (props: IProps) => {
     fetchImage();
   }, [clickedData]); // Make sure to include data in the dependency array if it can change
 
-  // console.log(imageUrl);
   const navigate = useNavigate();
   const onClick = () => console.log("CLICKEND");
 
@@ -311,8 +350,8 @@ const Slides = (props: IProps) => {
   const workCoverDecreaseIndex = (images: any) => {
     setDirection(-1);
 
-    if (leaving) return;
-    toggleLeaving();
+    if (workLeaving) return;
+    toggleWorkLeaving();
     const totalImages = images.length;
     const totalIndex = Math.ceil(totalImages / workCoverOffset) - 1;
     setWorkIndex((prev) => (prev === 0 ? totalIndex : prev - 1));
@@ -324,7 +363,6 @@ const Slides = (props: IProps) => {
     );
     if (foundData) {
       setClickedData(foundData);
-      console.log(foundData);
     }
     navigate(`data/${dataId}`);
   };
@@ -398,44 +436,71 @@ const Slides = (props: IProps) => {
             <WorkDetail layoutId={clickedData.id + ""}>
               {clickedData.id && (
                 <>
-                  <AnimatePresence
-                    initial={false}
-                    onExitComplete={toggleWorkLeaving}
-                    custom={direction}
-                  >
-                    <WorkRow
-                      variants={vars}
-                      custom={direction}
-                      animate="visible"
-                      initial="hidden"
-                      exit="exit"
-                      key={workIndex}
-                      transition={{ type: "tween", duration: 1 }}
-                    >
-                      {clickedData.posterImage
-                        ?.slice(
-                          workIndex * workCoverOffset,
-                          workIndex * workCoverOffset + workCoverOffset
-                        )
-                        .map((data: any) => (
-                          <WorkCover
+                  <WorkRowWrapper>
+                    {clickedData.posterImage.length > 1 ? (
+                      <>
+                        <AnimatePresence
+                          initial={false}
+                          onExitComplete={toggleWorkLeaving}
+                          custom={direction}
+                        >
+                          <AiOutlineLeft
+                            onClick={() =>
+                              workCoverDecreaseIndex(clickedData.posterImage)
+                            }
+                            style={workStyle}
+                          />
+                          <AiOutlineRight
                             onClick={() =>
                               workCoverIncreaseIndex(clickedData.posterImage)
                             }
-                            src={imageUrl[workIndex]}
-                            style={{
-                              backgroundImage: `linear-gradient(to top, black, transparent)`,
-                            }}
+                            style={workStyle}
                           />
-                        ))}
-                    </WorkRow>
-                  </AnimatePresence>
-                  {/* <WorkCover
-                    src={clickedData.posterUrl}
-                    style={{
-                      backgroundImage: `linear-gradient(to top, black, transparent)`,
-                    }}
-                  /> */}
+                          <WorkRow
+                            variants={workVars}
+                            custom={direction}
+                            animate="visible"
+                            initial="hidden"
+                            exit="exit"
+                            key={workIndex}
+                            transition={{ type: "tween", duration: 1 }}
+                          >
+                            {clickedData.posterImage
+                              ?.slice(
+                                workIndex * workCoverOffset,
+                                workIndex * workCoverOffset + workCoverOffset
+                              )
+                              .map((data: string) => (
+                                <>
+                                  {data.includes("mp4") ? (
+                                    <VideoCover controls>
+                                      <source
+                                        src={imageUrl[workIndex]}
+                                        type="video/mp4"
+                                      />
+                                    </VideoCover>
+                                  ) : (
+                                    <WorkCover
+                                      src={imageUrl[workIndex]}
+                                      style={{
+                                        backgroundImage: `linear-gradient(to top, black, transparent)`,
+                                      }}
+                                    />
+                                  )}
+                                </>
+                              ))}
+                          </WorkRow>
+                        </AnimatePresence>
+                      </>
+                    ) : (
+                      <WorkCover
+                        src={clickedData.posterUrl}
+                        style={{
+                          backgroundImage: `linear-gradient(to top, black, transparent)`,
+                        }}
+                      />
+                    )}
+                  </WorkRowWrapper>
                   <MicLogo onClick={onClick}>
                     <BsFillMicFill style={{ cursor: "pointer" }} />
                   </MicLogo>
