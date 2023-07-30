@@ -100,9 +100,9 @@ const navVars = {
 
 function Header() {
   const user: User | null = useAuth();
-  const homeMatch = useMatch("/");
-  const storyMatch = useMatch("/story");
-  const eventMatch = useMatch("/event");
+  const homeMatch = useMatch("/annexe-app");
+  const storyMatch = useMatch("/annexe-app/story");
+  const eventMatch = useMatch("/annexe-app/event");
   const { scrollY } = useScroll();
   const navAnimate = useAnimation();
   const style = { color: "white", fontSize: "2em" };
@@ -140,18 +140,18 @@ function Header() {
           <Image src={annexeLogo} alt="Annexe Logo" layoutId="logo" />
         </Logo>
         <Items>
-          <Link to="/">
+          <Link to="/annexe-app">
             <Item>Home {homeMatch && <Circle layoutId="circle" />}</Item>
           </Link>
         </Items>
         <Items>
-          <Link to="/story">
+          <Link to="/annexe-app/story">
             <Item>Add Story {storyMatch && <Circle layoutId="circle" />}</Item>
           </Link>
         </Items>
         {user && (
           <Items>
-            <Link to="/event">
+            <Link to="/annexe-app/event">
               <Item>
                 Add Event {eventMatch && <Circle layoutId="circle" />}
               </Item>

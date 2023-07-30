@@ -18,13 +18,12 @@ function App() {
         <LoginModal />
         <Header />
         <Routes>
-          <Route path="/" element={<Home />}>
+          <Route path="/annexe-app" element={<Home />}>
             <Route path="data/:dataId" element={<Home />} />
           </Route>
-          <Route path="/story" element={<Story />} />
-          <Route path="/event" element={<Event />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/validation" element={<Validation />} />
+          <Route path="/annexe-app/story" element={<Story />} />
+          <Route path="/annexe-app/event" element={<Event />} />
+          <Route path="/annexe-app/validation" element={<Validation />} />
         </Routes>
       </Router>
     </>

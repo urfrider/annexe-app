@@ -61,9 +61,9 @@ function Story() {
       organisation: organisation,
       description: description,
       posterImage: [],
-      validated: false
+      validated: false,
     };
-    user ? data.validated = true : data.validated = false
+    user ? (data.validated = true) : (data.validated = false);
     uploadImage(posterImage, "stories", organisation, data);
     toast.success("Added successfully");
   };
@@ -72,7 +72,7 @@ function Story() {
     <Wrapper>
       {user && (
         <ButtonDiv>
-          <Link to="/validation">
+          <Link to="/annexe-app/validation">
             <Button>Validate Stories</Button>
           </Link>
         </ButtonDiv>
