@@ -1,8 +1,8 @@
-import { useQueries, useQuery } from "react-query";
+import { useQueries } from "react-query";
 import styled from "styled-components";
 import { ClipLoader } from "react-spinners";
 import { Wrapper } from "../Components/styledComponents";
-import Slides, { IData } from "../Components/Slides";
+import Slides from "../Components/Slides";
 import annexeBg from "../assets/annexe-bg.jpg";
 import { devices } from "../Hooks/mediaQuery";
 import { fetchData } from "../Hooks/api";
@@ -91,7 +91,11 @@ function Home() {
           {eventsData && <Slides name="Events" data={eventsData} />}
           {storiesData && <Slides name="Stories" data={storiesData} />}
           {historyData && (
-            <Slides marginBottom={50} name="History" data={historyData} />
+            <Slides
+              marginBottom={50}
+              name="Art Pieces & Murals"
+              data={historyData}
+            />
           )}
         </>
       )}
