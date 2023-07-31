@@ -110,9 +110,6 @@ const WorkDetail = styled(motion.div)`
     background-color: #715c7d; /* color of the scroll thumb */
     border-radius: 20px; /* roundness of the scroll thumb */
   }
-  @media (${devices.sm}) {
-    width: 50vw;
-  }
   @media (${devices.md}) {
     width: 40vw;
   }
