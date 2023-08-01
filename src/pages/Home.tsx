@@ -50,6 +50,7 @@ const Overview = styled.p`
 `;
 
 function Home() {
+
   const queries = useQueries([
     {
       queryKey: "history",

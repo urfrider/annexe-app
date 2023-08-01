@@ -62,8 +62,13 @@ function Event() {
   const [description, setDescription] = useState("");
   const [posterImage, setPosterImage] = useState<string[]>([]);
 
+  const isFormValid = () => {
+    return title.trim() !== "" && organisation.trim() !== "" && description.trim() !== "" && posterImage.length > 0;
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isFormValid()) {
     var type = "";
     event ? (type = "events") : (type = "history");
     const data = {
@@ -74,6 +79,9 @@ function Event() {
     };
     uploadImage(posterImage, type, organisation, data);
     toast.success("Added successfully");
+  } else {
+    toast.error("Please fill in all required fields including uploading an image.");
+  }
   };
 
   return (

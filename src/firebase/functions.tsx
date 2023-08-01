@@ -1,5 +1,5 @@
 import { db, storage } from "./firebaseConfig";
-import { collection, addDoc,doc, updateDoc,deleteDoc  } from "firebase/firestore";
+import { collection, addDoc,doc, updateDoc,deleteDoc, getDocs, query, where  } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 interface Idata {
@@ -25,6 +25,30 @@ export const updateDb = async (collectionName: string, docId: string, updatedDat
     console.log("Document updated successfully!");
   } catch (e) {
     console.error("Error updating document: ", e);
+  }
+};
+
+export const deleteDbWithCondition = async (
+  collectionName: string,
+  fieldName: string,
+  fieldValue: any
+) => {
+  try {
+    const querySnapshot = await getDocs(
+      query(collection(db, collectionName), where(fieldName, "==", fieldValue))
+    );
+
+    const deletePromises: Promise<void>[] = [];
+
+    querySnapshot.forEach((doc) => {
+      const deletePromise = deleteDoc(doc.ref);
+      deletePromises.push(deletePromise);
+    });
+
+    await Promise.all(deletePromises);
+    console.log("Documents deleted successfully!");
+  } catch (e) {
+    console.error("Error deleting documents: ", e);
   }
 };
 

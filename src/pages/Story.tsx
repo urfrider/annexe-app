@@ -52,20 +52,28 @@ function Story() {
   const [description, setDescription] = useState("");
   const [posterImage, setPosterImage] = useState<string[]>([]);
 
+  const isFormValid = () => {
+    return title.trim() !== "" && organisation.trim() !== "" && description.trim() !== "" && posterImage.length > 0;
+  };
+
   const user: User | null = useAuth();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const data = {
-      title: title,
-      organisation: organisation,
-      description: description,
-      posterImage: [],
-      validated: false,
-    };
-    user ? (data.validated = true) : (data.validated = false);
-    uploadImage(posterImage, "stories", organisation, data);
-    toast.success("Added successfully");
+    if (isFormValid()) {
+      const data = {
+        title: title,
+        organisation: organisation,
+        description: description,
+        posterImage: [],
+        validated: false,
+      };
+      user ? (data.validated = true) : (data.validated = false);
+      uploadImage(posterImage, "stories", organisation, data);
+      toast.success("Added successfully");
+    } else {
+      toast.error("Please fill in all required fields including uploading an image.");
+    }
   };
 
   return (
