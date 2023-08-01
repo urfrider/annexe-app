@@ -63,25 +63,32 @@ function Event() {
   const [posterImage, setPosterImage] = useState<string[]>([]);
 
   const isFormValid = () => {
-    return title.trim() !== "" && organisation.trim() !== "" && description.trim() !== "" && posterImage.length > 0;
+    return (
+      title.trim() !== "" &&
+      organisation.trim() !== "" &&
+      description.trim() !== "" &&
+      posterImage.length > 0
+    );
   };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isFormValid()) {
-    var type = "";
-    event ? (type = "events") : (type = "history");
-    const data = {
-      title: title,
-      organisation: organisation,
-      description: description,
-      posterImage: [],
-    };
-    uploadImage(posterImage, type, organisation, data);
-    toast.success("Added successfully");
-  } else {
-    toast.error("Please fill in all required fields including uploading an image.");
-  }
+      var type = "";
+      event ? (type = "events") : (type = "history");
+      const data = {
+        title: title,
+        organisation: organisation,
+        description: description,
+        posterImage: [],
+      };
+      uploadImage(posterImage, type, organisation, data);
+      toast.success("Added successfully");
+    } else {
+      toast.error(
+        "Please fill in all required fields including uploading an image."
+      );
+    }
   };
 
   return (
@@ -92,11 +99,11 @@ function Event() {
             Event
           </div>
           <div onClick={() => setEvent(false)} className="history">
-            History
+            Art Pieces
           </div>
         </ToggleButton>
         <FormTitle>
-          {event == true ? "Add your event" : "Add your history"}
+          {event == true ? "Add your event" : "Add your art pieces"}
         </FormTitle>
         <Input
           required
