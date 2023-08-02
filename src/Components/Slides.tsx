@@ -552,7 +552,7 @@ const Slides = (props: IProps) => {
                   </WorkRowWrapper>
 
                   <WorkTitle>
-                    {clickedData.title}{" "}
+                    {clickedData.title}
                     <MicLogo>
                       <AiOutlinePlayCircle
                         onClick={handlePlay}
