@@ -117,6 +117,7 @@ const WorkDetail = styled(motion.div)`
 
 const WorkCover = styled.img`
   width: 100%;
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
   background-size: cover;
   background-position: center center;
   height: 18rem;
@@ -141,7 +142,7 @@ const WorkTitle = styled.h2`
   padding: 20px;
   font-size: 1.5rem;
   position: relative;
-  top: -4rem;
+  top: -1rem;
   color: #fffa65;
   @media (${devices.sm}) {
     font-size: 1.8rem;
@@ -155,7 +156,6 @@ const WorkOverview = styled.p`
   padding: 20px;
   width: 95%;
   position: relative;
-  top: -3rem;
   color: ${(props) => props.theme.white.lighter};
 
   @media (${devices.md}) {
@@ -527,12 +527,14 @@ const Slides = (props: IProps) => {
                                       />
                                     </VideoCover>
                                   ) : (
-                                    <WorkCover
-                                      src={imageUrl[workIndex]}
-                                      style={{
-                                        backgroundImage: `linear-gradient(to top, black, transparent)`,
-                                      }}
-                                    />
+                                    <>
+                                      <WorkCover
+                                        src={imageUrl[workIndex]}
+                                        style={{
+                                          backgroundImage: `linear-gradient(to top, black, transparent)`,
+                                        }}
+                                      />
+                                    </>
                                   )}
                                 </>
                               ))}
