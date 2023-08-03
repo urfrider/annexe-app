@@ -63,13 +63,15 @@ const FileUpload: React.FC<IFileUploadProps> = ({
     },
   });
 
+  console.log(base64);
+
   return (
     <Wrapper {...getRootProps()}>
       <input {...getInputProps()} />
       {base64.length > 0 ? (
         <div>
           {base64.map((file: string) =>
-            file.includes("mp4") ? (
+            file.includes("data:video") ? (
               <video controls height="100">
                 <source src={file} type="video/mp4" />
               </video>
