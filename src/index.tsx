@@ -29,6 +29,28 @@ time, mark, audio, video {
   font: inherit;
   vertical-align: baseline;
 }
+&::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #9881a5;
+  }
+
+  &::-webkit-scrollbar {
+    width: 5px;
+    background-color: #9881a5;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #715c7d;
+
+    background-image: -webkit-gradient(
+      linear,
+      0 0,
+      0 100%,
+      color-stop(0.5, rgba(255, 255, 255, 0.2)),
+      color-stop(0.5, transparent),
+      to(transparent)
+    );
+  }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, main, menu, nav, section {
