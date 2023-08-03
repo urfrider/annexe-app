@@ -7,12 +7,17 @@ import { devices } from "../Hooks/mediaQuery";
 import { BsStopCircle } from "react-icons/bs";
 import { getDownloadURL, ref } from "firebase/storage";
 import { storage } from "../firebase/firebaseConfig";
+import { useAuth } from "../firebase/firebaseAuth";
+import { User } from "firebase/auth";
+
 import {
   AiOutlineLeft,
   AiOutlineRight,
   AiOutlinePlayCircle,
   AiOutlinePauseCircle,
+  AiOutlineCloseCircle,
 } from "react-icons/ai";
+import { deleteDbWithCondition } from "../firebase/functions";
 
 const Detail = styled(motion.div)`
   padding: 10px;
@@ -179,6 +184,19 @@ const VideoCover = styled.video`
   height: 18rem;
 `;
 
+const CloseWrapper = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 2rem;
+  cursor: pointer;
+  z-index: 10;
+  &:hover {
+    color: #d2a4ed;
+    transition: linear 0.2s;
+  }
+`;
+
 const boxVars = {
   normal: {
     scale: 1,
@@ -273,9 +291,11 @@ interface IProps {
   data: IData[];
   name: string;
   marginBottom?: number;
+  collection: string;
+  refetch : any;
 }
 
-const Slides = (props: IProps) => {
+const Slides = (props: IProps) => {;
   const [direction, setDirection] = useState(0);
   const [index, setIndex] = useState(0);
   const [workIndex, setWorkIndex] = useState(0);
@@ -284,6 +304,7 @@ const Slides = (props: IProps) => {
   const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(
     null
   );
+  const [data, setData] = useState<any>([]);
   const [isPaused, setIsPaused] = useState(false);
 
   const [clickedData, setClickedData] = useState<IData>({
@@ -294,6 +315,7 @@ const Slides = (props: IProps) => {
     posterImage: [],
     posterUrl: "",
   });
+  const user: User | null = useAuth();
   const offset = 3;
   const workCoverOffset = 1;
   const [imageUrl, setImageUrl] = useState<any>();
@@ -307,8 +329,8 @@ const Slides = (props: IProps) => {
 
   // Fetch the image URL and text-to-speech when the component mounts or when the clcikedData changes
   useEffect(() => {
+    setData(props.data);
     fetchMedia();
-
     const synth = window.speechSynthesis;
     const u = new SpeechSynthesisUtterance(clickedData.description);
     setUtterance(u);
@@ -349,6 +371,12 @@ const Slides = (props: IProps) => {
 
   const toggleLeaving = () => setLeaving((prev) => !prev);
   const toggleWorkLeaving = () => setWorkLeaving((prev) => !prev);
+
+  const onDelete = async () => {
+    await deleteDbWithCondition(props.collection, "title", clickedData.title);
+    overlayOnClick();
+    await props.refetch();
+  };
 
   async function getImageUrl(imagePath: string): Promise<string> {
     try {
@@ -520,14 +548,26 @@ const Slides = (props: IProps) => {
                               .map((data: string) => (
                                 <>
                                   {data.includes("mp4") ? (
-                                    <VideoCover controls>
-                                      <source
-                                        src={imageUrl[workIndex]}
-                                        type="video/mp4"
-                                      />
-                                    </VideoCover>
+                                    <>
+                                      {user && (
+                                        <CloseWrapper onClick={onDelete}>
+                                          <AiOutlineCloseCircle />
+                                        </CloseWrapper>
+                                      )}
+                                      <VideoCover controls>
+                                        <source
+                                          src={imageUrl[workIndex]}
+                                          type="video/mp4"
+                                        />
+                                      </VideoCover>
+                                    </>
                                   ) : (
                                     <>
+                                      {user && (
+                                        <CloseWrapper onClick={onDelete}>
+                                          <AiOutlineCloseCircle />
+                                        </CloseWrapper>
+                                      )}
                                       <WorkCover
                                         src={imageUrl[workIndex]}
                                         style={{
@@ -542,12 +582,19 @@ const Slides = (props: IProps) => {
                         </AnimatePresence>
                       </>
                     ) : (
-                      <WorkCover
-                        src={clickedData.posterUrl}
-                        style={{
-                          backgroundImage: `linear-gradient(to top, black, transparent)`,
-                        }}
-                      />
+                      <>
+                        {user && (
+                          <CloseWrapper onClick={onDelete}>
+                            <AiOutlineCloseCircle />
+                          </CloseWrapper>
+                        )}
+                        <WorkCover
+                          src={clickedData.posterUrl}
+                          style={{
+                            backgroundImage: `linear-gradient(to top, black, transparent)`,
+                          }}
+                        />
+                      </>
                     )}
                   </WorkRowWrapper>
 

@@ -1,4 +1,4 @@
-import { useQueries } from "react-query";
+import { useQueries, useQueryClient } from "react-query";
 import styled from "styled-components";
 import { ClipLoader } from "react-spinners";
 import { Wrapper } from "../Components/styledComponents";
@@ -6,6 +6,7 @@ import Slides from "../Components/Slides";
 import annexeBg from "../assets/annexe-bg.jpg";
 import { devices } from "../Hooks/mediaQuery";
 import { fetchData } from "../Hooks/api";
+import { useEffect } from "react";
 
 const Loader = styled.div`
   display: flex;
@@ -50,6 +51,7 @@ const Overview = styled.p`
 `;
 
 function Home() {
+  const queryClient = useQueryClient();
 
   const queries = useQueries([
     {
@@ -66,11 +68,14 @@ function Home() {
     },
   ]);
 
-  const isLoading = queries.some((query) => query.isLoading);
-  const data = queries.map((query) => query.data);
+  // Function to manually refetch a specific query
+const refetchQuery = (queryKey: string) => {
+  queryClient.invalidateQueries(queryKey);
+};
+const isLoading = queries.some((query) => query.isLoading);
+const data = queries.map((query) => query.data);
 
-  const [historyData, storiesData, eventsData] = data;
-  // console.log(eventsData);
+const [historyData, storiesData, eventsData] = data;
 
   return (
     <Wrapper>
@@ -89,13 +94,15 @@ function Home() {
             </Overview>
           </Banner>
 
-          {eventsData && <Slides name="Events" data={eventsData} />}
-          {storiesData && <Slides name="Stories" data={storiesData} />}
+          {eventsData && <Slides name="Events" data={eventsData} collection="events" refetch={refetchQuery("events")} />}
+          {storiesData && <Slides name="Stories" data={storiesData} collection="stories" refetch={refetchQuery("stories")}/>}
           {historyData && (
             <Slides
               marginBottom={50}
               name="Art Pieces & Murals"
               data={historyData}
+              collection="history"
+              refetch={refetchQuery("history")}
             />
           )}
         </>
