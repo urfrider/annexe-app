@@ -292,10 +292,10 @@ interface IProps {
   name: string;
   marginBottom?: number;
   collection: string;
-  refetch : any;
+  refetch: any;
 }
 
-const Slides = (props: IProps) => {;
+const Slides = (props: IProps) => {
   const [direction, setDirection] = useState(0);
   const [index, setIndex] = useState(0);
   const [workIndex, setWorkIndex] = useState(0);
@@ -304,7 +304,7 @@ const Slides = (props: IProps) => {;
   const [utterance, setUtterance] = useState<SpeechSynthesisUtterance | null>(
     null
   );
-  const [data, setData] = useState<any>([]);
+  const [data, setData] = useState<IData[]>([]);
   const [isPaused, setIsPaused] = useState(false);
 
   const [clickedData, setClickedData] = useState<IData>({
@@ -318,12 +318,12 @@ const Slides = (props: IProps) => {;
   const user: User | null = useAuth();
   const offset = 3;
   const workCoverOffset = 1;
-  const [imageUrl, setImageUrl] = useState<any>();
+  const [imageUrl, setImageUrl] = useState<string[]>([]);
   async function fetchMedia() {
     setImageUrl([]);
     clickedData?.posterImage.map(async (img) => {
       const url = await getImageUrl(img);
-      setImageUrl((prev: any) => [...prev, url]);
+      setImageUrl((prev: string[]) => [...prev, url]);
     });
   }
 
@@ -412,7 +412,7 @@ const Slides = (props: IProps) => {;
     }
   };
 
-  const workCoverIncreaseIndex = async (images: any) => {
+  const workCoverIncreaseIndex = async (images: string[]) => {
     setDirection(1);
 
     if (workLeaving) return;
@@ -422,7 +422,7 @@ const Slides = (props: IProps) => {;
     setWorkIndex((prev) => (prev === totalIndex ? 0 : prev + 1));
   };
 
-  const workCoverDecreaseIndex = (images: any) => {
+  const workCoverDecreaseIndex = (images: string[]) => {
     setDirection(-1);
 
     if (workLeaving) return;
