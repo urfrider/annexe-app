@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/annexe-app/static/js/main.a932a897.js",
+    "main.js": "/annexe-app/static/js/main.fde3855f.js",
     "static/media/annexe-bg.jpg": "/annexe-app/static/media/annexe-bg.e27f26092015194daebe.jpg",
     "static/media/annexe-logo.png": "/annexe-app/static/media/annexe-logo.fdba463d4f4ffe0a3e6a.png",
     "index.html": "/annexe-app/index.html",
-    "main.a932a897.js.map": "/annexe-app/static/js/main.a932a897.js.map"
+    "main.fde3855f.js.map": "/annexe-app/static/js/main.fde3855f.js.map"
   },
   "entrypoints": [
-    "static/js/main.a932a897.js"
+    "static/js/main.fde3855f.js"
   ]
 }
