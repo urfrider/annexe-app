@@ -437,6 +437,8 @@ const Slides = (props: IProps) => {
       (data: IData) => data.id === dataId
     );
     if (foundData) {
+      setWorkIndex(0);
+
       setClickedData(foundData);
     }
     navigate(`data/${dataId}`);
@@ -451,6 +453,7 @@ const Slides = (props: IProps) => {
       posterImage: [],
       posterUrl: "",
     }));
+    setWorkIndex(0);
     navigate(-1);
   };
 
